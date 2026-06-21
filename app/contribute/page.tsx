@@ -1,10 +1,16 @@
 import type { Metadata } from 'next';
 import { ContributeForm } from '@/components/contribute/ContributeForm';
+import locationsData from '@/data/locations.json';
 
 export const metadata: Metadata = {
   title: 'Contribute a Route',
   description: 'Submit a missing route or report incorrect information to help improve Owa.',
 };
+
+// Canonical names + aliases, flattened, deduped, sorted — for datalist autocomplete
+const stopNames = Array.from(
+  new Set(locationsData.flatMap((l) => [l.canonical_name, ...l.aliases]))
+).sort();
 
 interface ContributePageProps {
   searchParams: {
@@ -13,16 +19,22 @@ interface ContributePageProps {
     route_label?: string;
     origin?: string;
     destination?: string;
+    from?: string;
+    to?: string;
   };
 }
 
 export default function ContributePage({ searchParams }: ContributePageProps) {
   const isCorrection = searchParams.type === 'correction';
+  const backHref =
+    searchParams.from && searchParams.to
+      ? `/?from=${encodeURIComponent(searchParams.from)}&to=${encodeURIComponent(searchParams.to)}`
+      : '/';
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
       <div className="mb-6">
-        <a href="/" className="text-sm text-gray-400 hover:text-owa-green transition-colors">
+        <a href={backHref} className="text-sm text-gray-400 hover:text-owa-green transition-colors">
           ← Back to search
         </a>
       </div>
@@ -33,8 +45,8 @@ export default function ContributePage({ searchParams }: ContributePageProps) {
         </h1>
         <p className="mt-1 text-sm text-gray-500">
           {isCorrection
-            ? 'Tell us what\'s wrong and what the correct information should be.'
-            : 'Know a route we\'re missing? Share the details and we\'ll add it after review.'}
+            ? "Tell us what's wrong and what the correct information should be."
+            : "Know a route we're missing? Share the details and we'll add it after review."}
         </p>
       </div>
 
@@ -45,11 +57,12 @@ export default function ContributePage({ searchParams }: ContributePageProps) {
           routeLabel={searchParams.route_label}
           prefillOrigin={searchParams.origin}
           prefillDestination={searchParams.destination}
+          stopNames={stopNames}
         />
       </div>
 
       <p className="mt-4 text-center text-xs text-gray-400">
-        Submissions are reviewed before going live. We may contact you on WhatsApp if you leave a number.
+        Submissions are reviewed before going live. We may follow up by email if you leave one.
       </p>
     </div>
   );

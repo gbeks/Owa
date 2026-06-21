@@ -74,7 +74,7 @@ export default function DirectionsPage({ params }: DirectionsPageProps) {
       {/* Report footer */}
       <div className="pt-2 pb-6 text-center">
         <a
-          href={`/contribute?type=correction&route_id=${route.route_id}&route_label=${encodeURIComponent(`${route.origin_label} → ${route.destination_label}`)}`}
+          href={`/contribute?type=correction&route_id=${route.route_id}&route_label=${encodeURIComponent(`${route.origin_label} → ${route.destination_label}`)}&from=${encodeURIComponent(route.origin_id)}&to=${encodeURIComponent(route.destination_id)}`}
           className="text-sm text-gray-400 hover:text-owa-green transition-colors underline underline-offset-2"
         >
           Something wrong? Report it.
