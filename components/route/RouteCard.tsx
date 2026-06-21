@@ -1,10 +1,10 @@
 import { Clock, ArrowRight } from 'lucide-react';
 import { FareRange } from './FareRange';
 import { ConfidenceBadge } from './ConfidenceBadge';
-import type { Route } from '@/types/route';
+import type { ResolvedRoute } from '@/types/route';
 
 interface RouteCardProps {
-  route: Route;
+  route: ResolvedRoute;
   aiFallback?: boolean;
 }
 

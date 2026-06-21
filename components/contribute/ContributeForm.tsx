@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import { Plus, Trash2, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import type { ContributionType } from '@/lib/supabase';
-import type { Route } from '@/types/route';
+import type { ResolvedRoute } from '@/types/route';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -59,7 +59,7 @@ const vehicleDisplayMap: Record<string, string> = {
   okada: 'Okada', ferry: 'Ferry', walk: 'Walk',
 };
 
-function routeLegToEditLeg(leg: Route['legs'][0]): EditLeg {
+function routeLegToEditLeg(leg: ResolvedRoute['legs'][0]): EditLeg {
   return {
     leg_id: leg.leg_id,
     board_landmark: leg.board_landmark ?? '',
@@ -92,7 +92,7 @@ interface ContributeFormProps {
   prefillOrigin?: string;
   prefillDestination?: string;
   stopNames?: string[];
-  route?: Route | null;
+  route?: ResolvedRoute | null;
 }
 
 // ── Main component ─────────────────────────────────────────────────────────────

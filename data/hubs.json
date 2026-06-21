@@ -1,0 +1,44 @@
+[
+  {
+    "hub_id": "oshodi",
+    "name": "Oshodi",
+    "type": "terminal",
+    "connects_to": ["ikeja", "yaba", "surulere", "cms-lagos-island", "ikorodu", "iyana-ipaja", "agege", "festac", "victoria-island"]
+  },
+  {
+    "hub_id": "tbs",
+    "name": "TBS (Tinubu Square)",
+    "type": "terminal",
+    "connects_to": ["cms-lagos-island", "victoria-island", "oshodi", "ketu", "ojota", "lekki-phase-1", "ikeja"]
+  },
+  {
+    "hub_id": "mile-2",
+    "name": "Mile 2 (Cele Junction)",
+    "type": "interchange",
+    "connects_to": ["festac", "cms-lagos-island", "oshodi", "apapa"]
+  },
+  {
+    "hub_id": "ojuelegba",
+    "name": "Ojuelegba",
+    "type": "interchange",
+    "connects_to": ["cms-lagos-island", "oshodi", "yaba", "palmgrove", "ikeja"]
+  },
+  {
+    "hub_id": "lekki-phase-1",
+    "name": "Lekki Phase 1 Gate",
+    "type": "interchange",
+    "connects_to": ["ajah", "cms-lagos-island", "victoria-island", "sangotedo"]
+  },
+  {
+    "hub_id": "ajah",
+    "name": "Ajah Roundabout",
+    "type": "interchange",
+    "connects_to": ["sangotedo", "lekki-phase-1", "cms-lagos-island"]
+  },
+  {
+    "hub_id": "agege",
+    "name": "Agege (Pen Cinema)",
+    "type": "interchange",
+    "connects_to": ["abule-egba", "oshodi", "ikeja"]
+  }
+]

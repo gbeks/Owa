@@ -10,17 +10,17 @@ import { Button } from '@/components/ui/Button';
 import { DirectionsStep } from '@/components/route/DirectionsStep';
 import { FareRange } from '@/components/route/FareRange';
 import { useRecentSearches } from '@/hooks/useRecentSearches';
-import type { Location, Route } from '@/types/route';
+import type { Location, ResolvedRoute } from '@/types/route';
 
 type SearchState =
   | { status: 'idle' }
   | { status: 'loading' }
-  | { status: 'found'; route: Route }
+  | { status: 'found'; route: ResolvedRoute }
   | { status: 'not-found'; originLabel: string; destinationLabel: string }
   | { status: 'error'; message: string };
 
 interface SearchSectionProps {
-  popularRoutes: Route[];
+  popularRoutes: ResolvedRoute[];
   initialFrom?: string;
   initialTo?: string;
 }
