@@ -35,6 +35,7 @@ export function SearchSection({ popularRoutes, initialFrom, initialTo }: SearchS
   const [expanded, setExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>('popular');
   const resultsRef = useRef<HTMLDivElement>(null);
+  const summaryRef = useRef<HTMLDivElement>(null);
 
   const { recents, addRecent, removeRecent, clearRecents, hydrated } = useRecentSearches();
 
@@ -53,9 +54,6 @@ export function SearchSection({ popularRoutes, initialFrom, initialTo }: SearchS
         if (res.ok) {
           setSearch({ status: 'found', route: data.route });
           setExpanded(true);
-          setTimeout(() => {
-            resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }, 120);
         } else {
           setSearch({ status: 'not-found', originLabel: initialFrom, destinationLabel: initialTo });
         }
@@ -70,11 +68,23 @@ export function SearchSection({ popularRoutes, initialFrom, initialTo }: SearchS
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function scrollToResults() {
-    setTimeout(() => {
-      resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 80);
-  }
+  // Scroll after React commits the new search state to the DOM
+  useEffect(() => {
+    const navbarHeight = document.querySelector('header')?.getBoundingClientRect().height ?? 0;
+
+    function scrollTo(el: HTMLElement) {
+      window.scrollTo({
+        top: el.getBoundingClientRect().top + window.scrollY - navbarHeight - 16,
+        behavior: 'smooth',
+      });
+    }
+
+    if (search.status === 'found' && summaryRef.current) {
+      scrollTo(summaryRef.current);
+    } else if ((search.status === 'error' || search.status === 'not-found') && resultsRef.current) {
+      scrollTo(resultsRef.current);
+    }
+  }, [search.status]);
 
   async function fetchRoute(
     from: string, to: string,
@@ -98,7 +108,6 @@ export function SearchSection({ popularRoutes, initialFrom, initialTo }: SearchS
     } catch {
       setSearch({ status: 'error', message: 'Could not load route. Check your connection and try again.' });
     }
-    scrollToResults();
   }
 
   function handleSwap() {
@@ -303,7 +312,7 @@ export function SearchSection({ popularRoutes, initialFrom, initialTo }: SearchS
           {search.status === 'found' && (
             <div className="space-y-3">
               {/* Summary card */}
-              <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-4">
+              <div ref={summaryRef} className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-4 scroll-mt-3">
                 <div>
                   <h2 className="text-lg font-black text-gray-900 leading-tight">
                     <span className="text-owa-green">{search.route.origin_label}</span>
