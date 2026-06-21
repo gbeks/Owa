@@ -17,22 +17,29 @@ export function EmptyState({ type = 'no-route', origin, destination }: EmptyStat
     );
   }
 
+  const contributeHref = origin && destination
+    ? `/contribute?type=new_route&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}`
+    : '/contribute?type=new_route';
+
   return (
     <div className="flex flex-col items-center justify-center py-12 text-center px-4">
       <MapPinOff size={48} className="mb-4 text-gray-300" />
-      <h2 className="text-xl font-bold text-gray-800 mb-2">No route found</h2>
+      <h2 className="text-xl font-bold text-gray-800 mb-2">We don&apos;t have this route yet.</h2>
       {origin && destination ? (
         <p className="text-gray-500 mb-4">
-          We don&apos;t have a route from <strong>{origin}</strong> to <strong>{destination}</strong> yet.
+          No route from <strong>{origin}</strong> to <strong>{destination}</strong> in our database.
         </p>
       ) : (
         <p className="text-gray-500 mb-4">
-          We don&apos;t have this route in our database yet.
+          This route isn&apos;t in our database yet.
         </p>
       )}
-      <p className="text-sm text-gray-400">
-        Try searching for a nearby area or landmark, or check back soon — we&apos;re adding routes regularly.
-      </p>
+      <a
+        href={contributeHref}
+        className="rounded-lg bg-owa-green px-4 py-2 text-sm font-semibold text-white hover:bg-owa-green-light transition-colors"
+      >
+        Submit this route
+      </a>
     </div>
   );
 }

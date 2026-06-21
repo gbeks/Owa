@@ -33,8 +33,9 @@ export function SearchForm() {
       return;
     }
 
+    // Cast needed until next build regenerates typed routes for /results
     router.push(
-      `/route?from=${encodeURIComponent(origin.location_id)}&to=${encodeURIComponent(destination.location_id)}`
+      `/results?from=${encodeURIComponent(origin.location_id)}&to=${encodeURIComponent(destination.location_id)}` as never
     );
   }
 

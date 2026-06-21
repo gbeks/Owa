@@ -1,4 +1,4 @@
-export type VehicleType = 'danfo' | 'brt' | 'keke' | 'okada' | 'ferry' | 'walk';
+export type VehicleType = 'danfo' | 'brt' | 'korope' | 'keke' | 'okada' | 'ferry' | 'walk';
 
 export interface RouteLeg {
   leg_id: string;

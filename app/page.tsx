@@ -1,9 +1,14 @@
+import { getPopularRoutes } from '@/lib/routes';
 import { SearchForm } from '@/components/search/SearchForm';
+import { RouteChip } from '@/components/route/RouteChip';
+import { PeakHourBanner } from '@/components/PeakHourBanner';
 
 export default function HomePage() {
+  const popularRoutes = getPopularRoutes(8);
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 sm:py-16">
-      <div className="mb-10 text-center">
+      <div className="mb-8 text-center">
         <h1 className="text-4xl font-black tracking-tight text-gray-900 sm:text-5xl">
           <span className="text-owa-green">Owa.</span>
         </h1>
@@ -15,25 +20,27 @@ export default function HomePage() {
         </p>
       </div>
 
-      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+      <PeakHourBanner />
+
+      <div className="mt-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
         <SearchForm />
       </div>
 
-      <div className="mt-8 grid grid-cols-3 gap-4 text-center">
-        {[
-          { icon: '🚌', label: 'Danfo routes' },
-          { icon: '🚍', label: 'BRT lines' },
-          { icon: '🛺', label: 'Keke & Okada' },
-        ].map(({ icon, label }) => (
-          <div key={label} className="rounded-xl border border-gray-100 bg-white px-3 py-4">
-            <p className="text-2xl mb-1">{icon}</p>
-            <p className="text-xs font-medium text-gray-500">{label}</p>
+      {popularRoutes.length > 0 && (
+        <div className="mt-6">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
+            Popular routes
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {popularRoutes.map((route) => (
+              <RouteChip key={route.route_id} route={route} />
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      )}
 
-      <p className="mt-6 text-center text-xs text-gray-400">
-        Covering 25+ Lagos corridors · Fares updated June 2026
+      <p className="mt-8 text-center text-xs text-gray-400">
+        {popularRoutes.length}+ Lagos corridors · Fares updated June 2026
       </p>
     </div>
   );

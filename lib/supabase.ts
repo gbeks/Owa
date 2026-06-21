@@ -29,3 +29,30 @@ export function getSupabaseAdmin(): SupabaseClient {
   }
   return _supabaseAdmin;
 }
+
+export async function logSearch(origin: string, destination: string, resultFound: boolean): Promise<void> {
+  try {
+    await getSupabase().from('search_logs').insert({
+      origin,
+      destination,
+      result_found: resultFound,
+    });
+  } catch {
+    // Non-blocking — route display must work even if logging fails
+  }
+}
+
+export type ContributionType = 'correction' | 'new_route';
+
+export async function submitContribution(payload: {
+  type: ContributionType;
+  route_id?: string;
+  origin?: string;
+  destination?: string;
+  description: string;
+  submitter_contact?: string;
+}): Promise<{ success: boolean; error?: string }> {
+  const { error } = await getSupabase().from('route_submissions').insert(payload);
+  if (error) return { success: false, error: error.message };
+  return { success: true };
+}

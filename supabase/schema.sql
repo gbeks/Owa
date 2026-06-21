@@ -1,53 +1,77 @@
--- Run this in your Supabase SQL Editor to set up the corrections table.
+-- Owa — Lagos Transit Router
+-- Run this in your Supabase SQL Editor.
 
-CREATE TABLE IF NOT EXISTS corrections (
-  id            UUID          DEFAULT gen_random_uuid() PRIMARY KEY,
-  created_at    TIMESTAMPTZ   DEFAULT NOW() NOT NULL,
-
-  route_id      TEXT          NOT NULL,
-  leg_id        TEXT,
-
-  issue_type    TEXT          NOT NULL,
-  CONSTRAINT issue_type_check CHECK (
-    issue_type IN (
-      'wrong_landmark',
-      'wrong_fare',
-      'route_closed',
-      'wrong_vehicle',
-      'other'
-    )
-  ),
-
-  description   TEXT          CHECK (char_length(description) <= 500),
-
-  status        TEXT          NOT NULL DEFAULT 'pending',
-  CONSTRAINT status_check CHECK (
-    status IN ('pending', 'reviewed', 'applied', 'dismissed')
-  ),
-
-  user_agent    TEXT,
-  ip_hash       TEXT
+-- ============================================================
+-- search_logs: every search tap, no PII, powers popular chips
+-- ============================================================
+CREATE TABLE IF NOT EXISTS search_logs (
+  id           UUID        DEFAULT gen_random_uuid() PRIMARY KEY,
+  origin       TEXT        NOT NULL,
+  destination  TEXT        NOT NULL,
+  result_found BOOLEAN     NOT NULL,
+  searched_at  TIMESTAMPTZ DEFAULT now()
 );
 
--- Indexes
-CREATE INDEX idx_corrections_review
-  ON corrections(status, created_at DESC)
-  WHERE status = 'pending';
+CREATE INDEX IF NOT EXISTS idx_search_logs_pair
+  ON search_logs(origin, destination, searched_at DESC);
 
-CREATE INDEX idx_corrections_route_id
-  ON corrections(route_id, created_at DESC);
+ALTER TABLE search_logs ENABLE ROW LEVEL SECURITY;
 
--- Row Level Security
-ALTER TABLE corrections ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "anon_insert"
-  ON corrections FOR INSERT TO anon
+CREATE POLICY "anon_insert_search_logs"
+  ON search_logs FOR INSERT TO anon
   WITH CHECK (true);
 
-CREATE POLICY "auth_select"
-  ON corrections FOR SELECT TO authenticated
+CREATE POLICY "auth_select_search_logs"
+  ON search_logs FOR SELECT TO authenticated
   USING (true);
 
-CREATE POLICY "auth_update_status"
-  ON corrections FOR UPDATE TO authenticated
+-- ============================================================
+-- route_submissions: corrections + new route contributions
+-- ============================================================
+CREATE TABLE IF NOT EXISTS route_submissions (
+  id                UUID        DEFAULT gen_random_uuid() PRIMARY KEY,
+  type              TEXT        NOT NULL,
+  CONSTRAINT type_check CHECK (type IN ('correction', 'new_route')),
+  route_id          TEXT,
+  origin            TEXT,
+  destination       TEXT,
+  description       TEXT        NOT NULL,
+  submitter_contact TEXT,
+  status            TEXT        NOT NULL DEFAULT 'pending',
+  CONSTRAINT status_check CHECK (status IN ('pending', 'approved', 'rejected')),
+  submitted_at      TIMESTAMPTZ DEFAULT now(),
+  reviewed_at       TIMESTAMPTZ,
+  reviewer_notes    TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_route_submissions_pending
+  ON route_submissions(status, submitted_at DESC)
+  WHERE status = 'pending';
+
+ALTER TABLE route_submissions ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "anon_insert_submissions"
+  ON route_submissions FOR INSERT TO anon
+  WITH CHECK (true);
+
+CREATE POLICY "auth_select_submissions"
+  ON route_submissions FOR SELECT TO authenticated
+  USING (true);
+
+CREATE POLICY "auth_update_submissions"
+  ON route_submissions FOR UPDATE TO authenticated
   USING (true) WITH CHECK (true);
+
+-- ============================================================
+-- Weekly popular routes view (used to rank route chips)
+-- ============================================================
+CREATE OR REPLACE VIEW popular_routes_weekly AS
+SELECT
+  origin,
+  destination,
+  COUNT(*) AS search_count
+FROM search_logs
+WHERE searched_at > now() - interval '7 days'
+  AND result_found = true
+GROUP BY origin, destination
+ORDER BY search_count DESC;
