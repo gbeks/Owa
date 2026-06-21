@@ -19,8 +19,6 @@ type SearchState =
   | { status: 'not-found'; originLabel: string; destinationLabel: string }
   | { status: 'error'; message: string };
 
-type Tab = 'popular' | 'recent';
-
 interface SearchSectionProps {
   popularRoutes: Route[];
   initialFrom?: string;
@@ -33,7 +31,6 @@ export function SearchSection({ popularRoutes, initialFrom, initialTo }: SearchS
   const [formError, setFormError] = useState('');
   const [search, setSearch] = useState<SearchState>({ status: 'idle' });
   const [expanded, setExpanded] = useState(false);
-  const [activeTab, setActiveTab] = useState<Tab>('popular');
   const resultsRef = useRef<HTMLDivElement>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
 
@@ -137,6 +134,7 @@ export function SearchSection({ popularRoutes, initialFrom, initialTo }: SearchS
   const isLoading = search.status === 'loading';
   const hasResults = search.status !== 'idle';
   const showTabs = hydrated && recents.length > 0;
+  const [activeTab, setActiveTab] = useState<'popular' | 'recent'>('popular');
   const showRecent = showTabs && activeTab === 'recent';
 
   return (
@@ -147,16 +145,10 @@ export function SearchSection({ popularRoutes, initialFrom, initialTo }: SearchS
         {/* Tab headers */}
         {showTabs && (
           <div className="mb-3 flex items-center gap-4 border-b border-gray-100 pb-0">
-            <TabButton
-              active={activeTab === 'popular'}
-              onClick={() => setActiveTab('popular')}
-            >
+            <TabButton active={activeTab === 'popular'} onClick={() => setActiveTab('popular')}>
               Popular
             </TabButton>
-            <TabButton
-              active={activeTab === 'recent'}
-              onClick={() => setActiveTab('recent')}
-            >
+            <TabButton active={activeTab === 'recent'} onClick={() => setActiveTab('recent')}>
               <Clock size={12} className="inline mr-1 -mt-0.5" />
               Recent
               <span className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none
@@ -178,7 +170,7 @@ export function SearchSection({ popularRoutes, initialFrom, initialTo }: SearchS
           </div>
         )}
 
-        {/* Chip grid */}
+        {/* Popular label when no tabs */}
         {!showTabs && (
           <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
             Popular routes
@@ -187,34 +179,30 @@ export function SearchSection({ popularRoutes, initialFrom, initialTo }: SearchS
 
         <div className="flex flex-wrap gap-2">
           {showRecent ? (
-            recents.length > 0 ? (
-              recents.map((r) => (
-                <div
-                  key={`${r.origin_id}-${r.destination_id}`}
-                  className="flex items-center rounded-full border border-gray-200 bg-white shadow-sm overflow-hidden"
+            recents.map((r) => (
+              <div
+                key={`${r.origin_id}-${r.destination_id}`}
+                className="flex items-center rounded-full border border-gray-200 bg-white shadow-sm overflow-hidden"
+              >
+                <button
+                  onClick={() => handleChipClick(r.origin_id, r.destination_id, r.origin_label, r.destination_label)}
+                  disabled={isLoading}
+                  className="flex items-center gap-1.5 pl-3.5 pr-2 py-2 text-sm font-medium text-gray-700
+                    hover:text-owa-green transition-colors disabled:opacity-50 whitespace-nowrap"
                 >
-                  <button
-                    onClick={() => handleChipClick(r.origin_id, r.destination_id, r.origin_label, r.destination_label)}
-                    disabled={isLoading}
-                    className="flex items-center gap-1.5 pl-3.5 pr-2 py-2 text-sm font-medium text-gray-700
-                      hover:text-owa-green transition-colors disabled:opacity-50 whitespace-nowrap"
-                  >
-                    <span>{r.origin_label}</span>
-                    <ArrowRight size={13} className="shrink-0 text-gray-400" />
-                    <span>{r.destination_label}</span>
-                  </button>
-                  <button
-                    onClick={() => removeRecent(r.origin_id, r.destination_id)}
-                    className="pr-2.5 pl-1 py-2 text-gray-300 hover:text-red-400 transition-colors"
-                    aria-label={`Remove ${r.origin_label} to ${r.destination_label} from recent searches`}
-                  >
-                    <X size={13} />
-                  </button>
-                </div>
-              ))
-            ) : (
-              <p className="text-sm text-gray-400 py-1">No recent searches yet.</p>
-            )
+                  <span>{r.origin_label}</span>
+                  <ArrowRight size={13} className="shrink-0 text-gray-400" />
+                  <span>{r.destination_label}</span>
+                </button>
+                <button
+                  onClick={() => removeRecent(r.origin_id, r.destination_id)}
+                  className="pr-2.5 pl-1 py-2 text-gray-300 hover:text-red-400 transition-colors"
+                  aria-label={`Remove ${r.origin_label} to ${r.destination_label} from recent searches`}
+                >
+                  <X size={13} />
+                </button>
+              </div>
+            ))
           ) : (
             popularRoutes.map((route) => (
               <button
