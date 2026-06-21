@@ -8,12 +8,14 @@ interface FareRangeProps {
 export function FareRange({ min, max, size = 'sm', label }: FareRangeProps) {
   return (
     <div className="flex flex-col items-end">
-      {label && <span className="text-xs text-gray-400 mb-0.5">{label}</span>}
+      {label && <span className="mb-0.5 text-xs text-owa-mist">{label}</span>}
       <span
-        className={`font-bold text-gray-800 tabular-nums ${size === 'lg' ? 'text-2xl' : 'text-base'}`}
+        className={`font-mono font-bold text-owa-gold tabular-nums ${size === 'lg' ? 'text-2xl' : 'text-sm'}`}
       >
         ₦{min.toLocaleString()}
-        {min !== max && <span className="font-normal text-gray-500"> – ₦{max.toLocaleString()}</span>}
+        {min !== max && (
+          <span className="font-normal text-owa-sand"> – ₦{max.toLocaleString()}</span>
+        )}
       </span>
     </div>
   );

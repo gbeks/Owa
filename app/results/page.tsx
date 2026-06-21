@@ -26,8 +26,6 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
   if (!from || !to) redirect('/');
 
   const route = findRoute(from, to);
-
-  // Log search non-blocking — do not await
   void logSearch(from, to, route !== null);
 
   if (!route) {
@@ -35,7 +33,7 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
       <div className="mx-auto max-w-2xl px-4 py-12">
         <EmptyState type="no-route" />
         <div className="mt-6 text-center">
-          <a href="/" className="text-sm font-semibold text-owa-green hover:underline">
+          <a href="/" className="text-sm font-semibold text-owa-gold hover:text-owa-gold-bright transition-colors">
             ← Search again
           </a>
         </div>
@@ -44,26 +42,26 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-6 space-y-4">
+    <div className="mx-auto max-w-2xl space-y-4 px-4 py-6">
       <div className="flex items-center justify-between">
-        <a href="/" className="text-sm text-gray-400 hover:text-owa-green transition-colors">
+        <a href="/" className="text-sm text-owa-mist transition-colors hover:text-owa-gold">
           ← New search
         </a>
       </div>
 
       <PeakHourBanner />
 
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-owa-mist/60">
         {route.legs.length} {route.legs.length === 1 ? 'leg' : 'legs'} ·{' '}
         {route.confidence === 'high' ? 'Verified route' : 'Route data may be approximate'}
       </p>
 
       <a
         href={`/directions/${route.route_id}`}
-        className="block rounded-2xl border-2 border-transparent hover:border-owa-green transition-colors"
+        className="block rounded-2xl border-2 border-transparent transition-colors hover:border-owa-gold/40"
       >
         <RouteCard route={route} />
-        <p className="mt-2 text-center text-xs font-semibold text-owa-green">
+        <p className="mt-2 text-center text-xs font-semibold text-owa-gold/70">
           Tap to see step-by-step directions →
         </p>
       </a>

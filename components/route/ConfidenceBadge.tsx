@@ -1,9 +1,9 @@
 import { CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 
 const config = {
-  high:   { icon: CheckCircle,    color: 'text-green-600',  label: 'High confidence' },
-  medium: { icon: Clock,          color: 'text-amber-600',  label: 'Medium confidence' },
-  low:    { icon: AlertTriangle,  color: 'text-red-500',    label: 'Low confidence' },
+  high:   { icon: CheckCircle,   color: 'text-owa-gold',   label: 'Verified' },
+  medium: { icon: Clock,         color: 'text-owa-sand',   label: 'Approx.' },
+  low:    { icon: AlertTriangle, color: 'text-red-400',    label: 'Unconfirmed' },
 };
 
 interface ConfidenceBadgeProps {
@@ -19,10 +19,8 @@ export function ConfidenceBadge({ confidence, lastVerified }: ConfidenceBadgePro
 
   return (
     <div className={`flex items-center gap-1.5 text-xs font-medium ${color}`}>
-      <Icon size={13} />
-      <span>
-        {label} · Verified {formatted}
-      </span>
+      <Icon size={12} />
+      <span>{label} · {formatted}</span>
     </div>
   );
 }

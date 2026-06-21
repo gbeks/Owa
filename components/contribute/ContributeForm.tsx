@@ -51,6 +51,13 @@ interface ContributeFormProps {
   stopNames?: string[];
 }
 
+// ── Shared input class ─────────────────────────────────────────────────────────
+
+const inputCls =
+  'w-full rounded-xl border border-white/[0.08] bg-owa-night3 px-3 py-2.5 text-sm ' +
+  'text-owa-white placeholder-owa-mist/40 ' +
+  'focus:border-owa-gold/50 focus:outline-none focus:ring-1 focus:ring-owa-gold/30';
+
 // ── Main component ─────────────────────────────────────────────────────────────
 
 export function ContributeForm({
@@ -63,12 +70,11 @@ export function ContributeForm({
 }: ContributeFormProps) {
   const [origin, setOrigin] = useState(prefillOrigin ?? '');
   const [destination, setDestination] = useState(prefillDestination ?? '');
-  const [description, setDescription] = useState(''); // used for corrections only
+  const [description, setDescription] = useState('');
   const [contact, setContact] = useState('');
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Leg builder (new_route only)
   const counterRef = useRef(0);
   function nextId() { return `leg-${++counterRef.current}`; }
   const [legs, setLegs] = useState<Leg[]>(() => [blankLeg(nextId())]);
@@ -81,7 +87,6 @@ export function ContributeForm({
       prev.map((l) => {
         if (l.id !== id) return l;
         const updated = { ...l, ...patch };
-        // Auto-zero fares when Walk is selected
         if (patch.vehicle_type === 'Walk') {
           updated.fare_min = '0';
           updated.fare_max = '0';
@@ -89,17 +94,11 @@ export function ContributeForm({
         return updated;
       })
     );
-    // Clear per-leg error on any edit
     setLegErrors((prev) => { const n = { ...prev }; delete n[id]; return n; });
   }
 
-  function addLeg() {
-    setLegs((prev) => [...prev, blankLeg(nextId())]);
-  }
-
-  function removeLeg(id: string) {
-    setLegs((prev) => prev.filter((l) => l.id !== id));
-  }
+  function addLeg() { setLegs((prev) => [...prev, blankLeg(nextId())]); }
+  function removeLeg(id: string) { setLegs((prev) => prev.filter((l) => l.id !== id)); }
 
   // ── Validation ───────────────────────────────────────────────────────────────
 
@@ -124,27 +123,13 @@ export function ContributeForm({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErrorMsg('');
-
     if (type === 'new_route' && !validateLegs()) return;
-
     setSubmitStatus('loading');
     try {
       const body =
         type === 'correction'
-          ? {
-              type,
-              route_id: routeId,
-              description,
-              submitter_contact: contact || undefined,
-            }
-          : {
-              type,
-              origin,
-              destination,
-              description: serializeLegs(legs),
-              submitter_contact: contact || undefined,
-            };
-
+          ? { type, route_id: routeId, description, submitter_contact: contact || undefined }
+          : { type, origin, destination, description: serializeLegs(legs), submitter_contact: contact || undefined };
       const res = await fetch('/api/contribute', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -163,13 +148,13 @@ export function ContributeForm({
 
   if (submitStatus === 'success') {
     return (
-      <div className="py-8 text-center space-y-2">
-        <p className="text-3xl">✓</p>
-        <p className="font-semibold text-gray-900">Submitted — thank you.</p>
-        <p className="text-sm text-gray-500">
+      <div className="space-y-2 py-8 text-center">
+        <p className="text-3xl text-owa-gold">✓</p>
+        <p className="font-semibold text-owa-white">Submitted — thank you.</p>
+        <p className="text-sm text-owa-mist">
           We&apos;ll review this and update the route if everything checks out.
         </p>
-        <a href="/" className="mt-4 inline-block text-sm font-semibold text-owa-green hover:underline">
+        <a href="/" className="mt-4 inline-block text-sm font-semibold text-owa-gold hover:text-owa-gold-bright transition-colors">
           Back to search
         </a>
       </div>
@@ -183,27 +168,22 @@ export function ContributeForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
 
-      {/* Stop-name datalist — shared by origin + destination inputs */}
       {stopNames.length > 0 && (
         <datalist id="owa-stops">
-          {stopNames.map((name) => (
-            <option key={name} value={name} />
-          ))}
+          {stopNames.map((name) => <option key={name} value={name} />)}
         </datalist>
       )}
 
-      {/* ── Correction context banner ── */}
       {type === 'correction' && routeLabel && (
-        <div className="rounded-lg bg-gray-50 px-3 py-2 text-sm text-gray-600">
-          Route: <span className="font-semibold">{routeLabel}</span>
+        <div className="rounded-xl border border-white/[0.06] bg-owa-night3 px-3 py-2.5 text-sm text-owa-mist">
+          Route: <span className="font-semibold text-owa-white">{routeLabel}</span>
         </div>
       )}
 
-      {/* ── New route: Origin + Destination ── */}
       {type === 'new_route' && (
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label htmlFor="origin" className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+            <label htmlFor="origin" className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-owa-mist">
               Origin *
             </label>
             <input
@@ -218,7 +198,7 @@ export function ContributeForm({
             />
           </div>
           <div>
-            <label htmlFor="destination" className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+            <label htmlFor="destination" className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-owa-mist">
               Destination *
             </label>
             <input
@@ -235,13 +215,11 @@ export function ContributeForm({
         </div>
       )}
 
-      {/* ── New route: Leg builder ── */}
       {type === 'new_route' && (
         <div className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-owa-mist">
             Route legs *
           </p>
-
           {legs.map((leg, index) => (
             <LegCard
               key={leg.id}
@@ -253,24 +231,22 @@ export function ContributeForm({
               onRemove={() => removeLeg(leg.id)}
             />
           ))}
-
           <button
             type="button"
             onClick={addLeg}
             className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed
-              border-gray-300 py-2.5 text-sm font-medium text-gray-500 hover:border-owa-green
-              hover:text-owa-green transition-colors"
+              border-white/[0.12] py-2.5 text-sm font-medium text-owa-mist transition-colors
+              hover:border-owa-gold/30 hover:text-owa-gold"
           >
-            <Plus size={15} />
+            <Plus size={14} />
             Add leg
           </button>
         </div>
       )}
 
-      {/* ── Correction: free-text description ── */}
       {type === 'correction' && (
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="description" className="mb-1.5 block text-sm font-medium text-owa-mist">
             What&apos;s wrong and what should it say? *
           </label>
           <textarea
@@ -285,11 +261,10 @@ export function ContributeForm({
         </div>
       )}
 
-      {/* ── Email contact (both types) ── */}
       <div>
-        <label htmlFor="contact" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="contact" className="mb-1.5 block text-sm font-medium text-owa-mist">
           Email{' '}
-          <span className="text-gray-400 font-normal">(optional)</span>
+          <span className="font-normal text-owa-mist/50">(optional)</span>
         </label>
         <input
           id="contact"
@@ -302,7 +277,7 @@ export function ContributeForm({
       </div>
 
       {submitStatus === 'error' && (
-        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 border border-red-200">
+        <p className="rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2.5 text-sm text-red-400">
           {errorMsg}
         </p>
       )}
@@ -313,12 +288,6 @@ export function ContributeForm({
     </form>
   );
 }
-
-// ── Shared input class ─────────────────────────────────────────────────────────
-
-const inputCls =
-  'w-full rounded-lg border border-gray-300 px-3 py-2 text-sm ' +
-  'focus:border-owa-green focus:outline-none focus:ring-1 focus:ring-owa-green';
 
 // ── LegCard sub-component ──────────────────────────────────────────────────────
 
@@ -333,32 +302,32 @@ interface LegCardProps {
 
 function LegCard({ leg, index, canRemove, error, onChange, onRemove }: LegCardProps) {
   const isWalk = leg.vehicle_type === 'Walk';
+  const inputCls =
+    'w-full rounded-xl border border-white/[0.08] bg-owa-night2 px-3 py-2 text-sm ' +
+    'text-owa-white placeholder-owa-mist/40 ' +
+    'focus:border-owa-gold/50 focus:outline-none focus:ring-1 focus:ring-owa-gold/30';
 
   return (
-    <div className={`rounded-xl border bg-white p-4 space-y-3 transition-colors ${error ? 'border-red-300' : 'border-gray-200'}`}>
-
-      {/* Header */}
+    <div className={`space-y-3 rounded-xl border bg-owa-night3 p-4 transition-colors ${error ? 'border-red-500/30' : 'border-white/[0.06]'}`}>
       <div className="flex items-center justify-between">
-        <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-owa-mist">
           Leg {index + 1}
         </span>
         {canRemove && (
           <button
             type="button"
             onClick={onRemove}
-            className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-gray-400
-              hover:bg-red-50 hover:text-red-500 transition-colors"
+            className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs text-owa-mist/50 transition-colors hover:bg-red-500/10 hover:text-red-400"
             aria-label={`Remove leg ${index + 1}`}
           >
-            <Trash2 size={12} />
+            <Trash2 size={11} />
             Remove
           </button>
         )}
       </div>
 
-      {/* Boarding point */}
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Board at *</label>
+        <label className="mb-1.5 block text-[10px] font-medium uppercase tracking-widest text-owa-mist">Board at *</label>
         <input
           type="text"
           required
@@ -369,24 +338,20 @@ function LegCard({ leg, index, canRemove, error, onChange, onRemove }: LegCardPr
         />
       </div>
 
-      {/* Vehicle + Fare row */}
       <div className="grid grid-cols-3 gap-2">
         <div className="col-span-1">
-          <label className="block text-xs font-medium text-gray-600 mb-1">Vehicle *</label>
+          <label className="mb-1.5 block text-[10px] font-medium uppercase tracking-widest text-owa-mist">Vehicle *</label>
           <select
             value={leg.vehicle_type}
             onChange={(e) => onChange({ vehicle_type: e.target.value as VehicleOption })}
             className={inputCls}
           >
-            {VEHICLE_OPTIONS.map((v) => (
-              <option key={v} value={v}>{v}</option>
-            ))}
+            {VEHICLE_OPTIONS.map((v) => <option key={v} value={v}>{v}</option>)}
           </select>
         </div>
-
         <div className="col-span-1">
-          <label className="block text-xs font-medium text-gray-600 mb-1">
-            Fare min (₦) {isWalk ? '' : '*'}
+          <label className="mb-1.5 block text-[10px] font-medium uppercase tracking-widest text-owa-mist">
+            Min (₦) {isWalk ? '' : '*'}
           </label>
           <input
             type="number"
@@ -395,13 +360,12 @@ function LegCard({ leg, index, canRemove, error, onChange, onRemove }: LegCardPr
             onChange={(e) => onChange({ fare_min: e.target.value })}
             placeholder="0"
             disabled={isWalk}
-            className={`${inputCls} ${isWalk ? 'bg-gray-50 text-gray-400' : ''}`}
+            className={`${inputCls} ${isWalk ? 'opacity-30 cursor-not-allowed' : ''}`}
           />
         </div>
-
         <div className="col-span-1">
-          <label className="block text-xs font-medium text-gray-600 mb-1">
-            Fare max (₦) {isWalk ? '' : '*'}
+          <label className="mb-1.5 block text-[10px] font-medium uppercase tracking-widest text-owa-mist">
+            Max (₦) {isWalk ? '' : '*'}
           </label>
           <input
             type="number"
@@ -410,14 +374,13 @@ function LegCard({ leg, index, canRemove, error, onChange, onRemove }: LegCardPr
             onChange={(e) => onChange({ fare_max: e.target.value })}
             placeholder="0"
             disabled={isWalk}
-            className={`${inputCls} ${isWalk ? 'bg-gray-50 text-gray-400' : ''}`}
+            className={`${inputCls} ${isWalk ? 'opacity-30 cursor-not-allowed' : ''}`}
           />
         </div>
       </div>
 
-      {/* Drop-off point */}
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Drop at *</label>
+        <label className="mb-1.5 block text-[10px] font-medium uppercase tracking-widest text-owa-mist">Drop at *</label>
         <input
           type="text"
           required
@@ -428,9 +391,8 @@ function LegCard({ leg, index, canRemove, error, onChange, onRemove }: LegCardPr
         />
       </div>
 
-      {/* Per-leg validation error */}
       {error && (
-        <p className="text-xs text-red-600 font-medium">{error}</p>
+        <p className="text-xs font-medium text-red-400">{error}</p>
       )}
     </div>
   );
