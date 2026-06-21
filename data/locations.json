@@ -1,0 +1,202 @@
+[
+  {
+    "location_id": "ojuelegba",
+    "canonical_name": "Ojuelegba",
+    "aliases": ["Ojue", "Ojuelegba junction", "Ojuelegba bus stop", "Ojuelegba under-bridge", "Ojuelegba interchange"],
+    "area": "Surulere",
+    "lga": "Surulere LGA",
+    "type": "bus_stop"
+  },
+  {
+    "location_id": "cms-lagos-island",
+    "canonical_name": "CMS (Lagos Island)",
+    "aliases": ["CMS", "Marina", "Lagos Island CMS", "CMS bus stop", "Cathedral", "CMS Marina", "Lagos Island", "TBS CMS"],
+    "area": "Lagos Island",
+    "lga": "Lagos Island LGA",
+    "type": "terminal"
+  },
+  {
+    "location_id": "yaba",
+    "canonical_name": "Yaba",
+    "aliases": ["Yaaba", "Yaba bus stop", "Yaba market", "Herbert Macaulay Yaba", "Yaba junction", "Yaba roundabout"],
+    "area": "Yaba",
+    "lga": "Lagos Mainland LGA",
+    "type": "bus_stop"
+  },
+  {
+    "location_id": "ikeja",
+    "canonical_name": "Ikeja",
+    "aliases": ["Ikaja", "Ikeja Along", "Ikeja bus stop", "Ikeja CBD", "Lagos State capital", "Ikeja City Mall area"],
+    "area": "Ikeja",
+    "lga": "Ikeja LGA",
+    "type": "area"
+  },
+  {
+    "location_id": "oshodi",
+    "canonical_name": "Oshodi",
+    "aliases": ["Oshodi Terminal", "Oshodi Under-Bridge", "Oshodi interchange", "Oshodi bus stop", "Oshodi park", "Oshodi terminal 2"],
+    "area": "Oshodi-Isolo",
+    "lga": "Oshodi-Isolo LGA",
+    "type": "terminal"
+  },
+  {
+    "location_id": "victoria-island",
+    "canonical_name": "Victoria Island",
+    "aliases": ["VI", "Victoria Island Lagos", "Eko Hotel area", "Bar Beach VI", "Sanusi Fafunwa", "Ahmadu Bello Way VI"],
+    "area": "Victoria Island",
+    "lga": "Eti-Osa LGA",
+    "type": "area"
+  },
+  {
+    "location_id": "lekki-phase-1",
+    "canonical_name": "Lekki Phase 1",
+    "aliases": ["Lekki", "Lekki Phase1", "Lekki gate", "Lekki Phase 1 gate", "Lekki 1", "Admiralty Way Lekki"],
+    "area": "Lekki",
+    "lga": "Eti-Osa LGA",
+    "type": "bus_stop"
+  },
+  {
+    "location_id": "ikorodu",
+    "canonical_name": "Ikorodu",
+    "aliases": ["Ikorodu Terminal", "Ikorodu bus terminal", "Ikorodu garage", "Ikorodu Town", "Garage Ikorodu"],
+    "area": "Ikorodu",
+    "lga": "Ikorodu LGA",
+    "type": "terminal"
+  },
+  {
+    "location_id": "surulere",
+    "canonical_name": "Surulere",
+    "aliases": ["Surulere bus stop", "Aguda Surulere", "Adeniran Ogunsanya Surulere", "Surulere market", "NLNG Surulere", "Kilo Surulere"],
+    "area": "Surulere",
+    "lga": "Surulere LGA",
+    "type": "bus_stop"
+  },
+  {
+    "location_id": "agege",
+    "canonical_name": "Agege",
+    "aliases": ["Agege bus stop", "Agege market", "Agege stadium area", "Old Abeokuta Road Agege", "Pen Cinema Agege"],
+    "area": "Agege",
+    "lga": "Agege LGA",
+    "type": "bus_stop"
+  },
+  {
+    "location_id": "maryland",
+    "canonical_name": "Maryland",
+    "aliases": ["Maryland bus stop", "Maryland Mall area", "Ikorodu Road Maryland", "Maryland junction", "Mende Maryland"],
+    "area": "Maryland",
+    "lga": "Kosofe LGA",
+    "type": "bus_stop"
+  },
+  {
+    "location_id": "festac",
+    "canonical_name": "Festac Town",
+    "aliases": ["FESTAC", "Festac", "Festac interchange", "1st Avenue Festac", "Festac Town Lagos", "Festac bus stop"],
+    "area": "Festac Town",
+    "lga": "Amuwo-Odofin LGA",
+    "type": "area"
+  },
+  {
+    "location_id": "ajah",
+    "canonical_name": "Ajah",
+    "aliases": ["Ajah bus stop", "Ajah roundabout", "Ajah market", "Abraham Adesanya Ajah", "Shoprite Ajah"],
+    "area": "Ajah",
+    "lga": "Eti-Osa LGA",
+    "type": "bus_stop"
+  },
+  {
+    "location_id": "computer-village",
+    "canonical_name": "Computer Village (Ikeja)",
+    "aliases": ["Computer Village", "Ikeja Computer Village", "CV Ikeja", "Awolowo Way Ikeja", "Obafemi Awolowo Way"],
+    "area": "Ikeja",
+    "lga": "Ikeja LGA",
+    "type": "landmark"
+  },
+  {
+    "location_id": "ketu",
+    "canonical_name": "Ketu",
+    "aliases": ["Ketu bus stop", "Ikorodu Road Ketu", "Alapere Ketu", "Ketu roundabout", "Mile 12 Ketu"],
+    "area": "Ketu",
+    "lga": "Kosofe LGA",
+    "type": "bus_stop"
+  },
+  {
+    "location_id": "mile-2",
+    "canonical_name": "Mile 2",
+    "aliases": ["Mile2", "Mile 2 bus stop", "Cele bus stop", "Cele Mile 2", "Ojo Road Mile 2", "NPA Mile 2"],
+    "area": "Mile 2",
+    "lga": "Ajeromi-Ifelodun LGA",
+    "type": "terminal"
+  },
+  {
+    "location_id": "iyana-ipaja",
+    "canonical_name": "Iyana Ipaja",
+    "aliases": ["Iyana-Ipaja", "Ipaja", "Iyana Ipaja bus stop", "Ikeja Along Ipaja", "Command Ipaja"],
+    "area": "Alimosho",
+    "lga": "Alimosho LGA",
+    "type": "bus_stop"
+  },
+  {
+    "location_id": "apapa",
+    "canonical_name": "Apapa",
+    "aliases": ["Apapa wharf", "Apapa bus stop", "Apapa GRA", "Creek Road Apapa", "Liverpool Road Apapa"],
+    "area": "Apapa",
+    "lga": "Apapa LGA",
+    "type": "area"
+  },
+  {
+    "location_id": "mushin",
+    "canonical_name": "Mushin",
+    "aliases": ["Mushin market", "Mushin bus stop", "Idi-Oro Mushin", "Town Planning Way Mushin", "Mushin Lagos"],
+    "area": "Mushin",
+    "lga": "Mushin LGA",
+    "type": "bus_stop"
+  },
+  {
+    "location_id": "palmgrove",
+    "canonical_name": "Palmgrove",
+    "aliases": ["Palm Groove", "Palmgrove bus stop", "Ikorodu Road Palmgrove", "Palmgrove estate", "Jibowu Palmgrove"],
+    "area": "Shomolu",
+    "lga": "Shomolu LGA",
+    "type": "bus_stop"
+  },
+  {
+    "location_id": "berger",
+    "canonical_name": "Berger (Ojodu)",
+    "aliases": ["Berger", "Ojodu Berger", "Lagos-Ibadan Expressway Berger", "Berger bus stop", "Ojodu"],
+    "area": "Ojodu",
+    "lga": "Ikeja LGA",
+    "type": "bus_stop"
+  },
+  {
+    "location_id": "ojota",
+    "canonical_name": "Ojota",
+    "aliases": ["Ojota bus stop", "Ojota terminal", "Ikorodu Road Ojota", "New Garage Ojota", "Ojota Lagos"],
+    "area": "Kosofe",
+    "lga": "Kosofe LGA",
+    "type": "terminal"
+  },
+  {
+    "location_id": "sangotedo",
+    "canonical_name": "Sangotedo",
+    "aliases": ["Sangotedo bus stop", "Ajah Sangotedo", "Novare Mall area", "Shoprite Sangotedo", "Monastery Road"],
+    "area": "Eti-Osa",
+    "lga": "Eti-Osa LGA",
+    "type": "bus_stop"
+  },
+  {
+    "location_id": "abule-egba",
+    "canonical_name": "Abule Egba",
+    "aliases": ["Abule-Egba", "Abule Egba bus stop", "Abeokuta Expressway Abule Egba", "Ijaiye Abule Egba", "Oke-Odo Abule Egba"],
+    "area": "Agege",
+    "lga": "Agege LGA",
+    "type": "bus_stop"
+  },
+  {
+    "location_id": "tbs",
+    "canonical_name": "TBS (Tinubu Square)",
+    "aliases": ["TBS", "Tinubu Square", "Broad Street Lagos", "Lagos Island TBS", "Race Course TBS"],
+    "area": "Lagos Island",
+    "lga": "Lagos Island LGA",
+    "type": "terminal"
+  }
+]

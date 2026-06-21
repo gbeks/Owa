@@ -1,0 +1,907 @@
+[
+  {
+    "route_id": "ojuelegba-to-cms",
+    "origin_id": "ojuelegba",
+    "destination_id": "cms-lagos-island",
+    "origin_label": "Ojuelegba",
+    "destination_label": "CMS (Lagos Island)",
+    "total_fare_min": 300,
+    "total_fare_max": 450,
+    "total_duration_estimate_mins": 55,
+    "last_verified": "2026-05-15",
+    "confidence": "high",
+    "flagged": false,
+    "legs": [
+      {
+        "leg_id": "leg_01",
+        "step_number": 1,
+        "vehicle": "danfo",
+        "board_landmark": "Ojuelegba Under-Bridge (CMS-facing side)",
+        "board_instruction": "Board any yellow danfo heading to CMS. Tell the conductor 'CMS' or 'Marina'.",
+        "alight_landmark": "CMS Bus Stop, opposite First Bank on Lagos Island",
+        "alight_instruction": "Drop when you see the overhead bridge at CMS. The bus stops right there.",
+        "fare_min": 300,
+        "fare_max": 450,
+        "duration_estimate_mins": 55,
+        "notes": "Avoid 7–9am and 4–7pm. Traffic on the Third Mainland can double journey time."
+      }
+    ]
+  },
+  {
+    "route_id": "yaba-to-ikeja",
+    "origin_id": "yaba",
+    "destination_id": "ikeja",
+    "origin_label": "Yaba",
+    "destination_label": "Ikeja",
+    "total_fare_min": 250,
+    "total_fare_max": 350,
+    "total_duration_estimate_mins": 40,
+    "last_verified": "2026-05-20",
+    "confidence": "high",
+    "flagged": false,
+    "legs": [
+      {
+        "leg_id": "leg_01",
+        "step_number": 1,
+        "vehicle": "danfo",
+        "board_landmark": "Yaba Bus Stop, near Herbert Macaulay junction",
+        "board_instruction": "Board a danfo going to Oshodi. Tell the conductor 'Oshodi'.",
+        "alight_landmark": "Oshodi Terminal 2, opposite the overhead bridge",
+        "alight_instruction": "Drop at Oshodi — you'll see the large interchange. Walk to the Ikeja-bound side.",
+        "fare_min": 150,
+        "fare_max": 200,
+        "duration_estimate_mins": 25,
+        "notes": "Danfos to Oshodi are frequent — you won't wait long."
+      },
+      {
+        "leg_id": "leg_02",
+        "step_number": 2,
+        "vehicle": "danfo",
+        "board_landmark": "Oshodi Terminal, Ikeja-bound loading bay",
+        "board_instruction": "Board a danfo going to Ikeja Along. Tell the conductor 'Ikeja Along' or 'Computer Village'.",
+        "alight_landmark": "Ikeja Along bus stop, near Unity Road junction",
+        "alight_instruction": "Drop at Ikeja Along — the bus will stop at the junction. You're in Ikeja.",
+        "fare_min": 100,
+        "fare_max": 150,
+        "duration_estimate_mins": 15
+      }
+    ]
+  },
+  {
+    "route_id": "oshodi-to-victoria-island",
+    "origin_id": "oshodi",
+    "destination_id": "victoria-island",
+    "origin_label": "Oshodi",
+    "destination_label": "Victoria Island",
+    "total_fare_min": 250,
+    "total_fare_max": 400,
+    "total_duration_estimate_mins": 65,
+    "last_verified": "2026-05-18",
+    "confidence": "high",
+    "flagged": false,
+    "legs": [
+      {
+        "leg_id": "leg_01",
+        "step_number": 1,
+        "vehicle": "brt",
+        "board_landmark": "Oshodi BRT Terminal (TBS-bound platform)",
+        "board_instruction": "Board the BRT bus to TBS. Pay at the terminal booth — do not pay inside the bus.",
+        "alight_landmark": "TBS BRT Stop (Tinubu Square, Lagos Island)",
+        "alight_instruction": "Ride to the last stop at TBS. Exit from the right side of the bus.",
+        "fare_min": 100,
+        "fare_max": 200,
+        "duration_estimate_mins": 45,
+        "notes": "BRT buses run every 10–15 minutes. Buy your ticket at the terminal kiosk before boarding."
+      },
+      {
+        "leg_id": "leg_02",
+        "step_number": 2,
+        "vehicle": "danfo",
+        "board_landmark": "TBS Bus Stop, near the fountain roundabout",
+        "board_instruction": "Board a danfo heading to Victoria Island. Tell the conductor 'VI' or 'Eko Hotel'.",
+        "alight_landmark": "Victoria Island bus stop, near Eko Hotel junction",
+        "alight_instruction": "Drop off when you see Eko Hotel on your left. That's central VI.",
+        "fare_min": 150,
+        "fare_max": 200,
+        "duration_estimate_mins": 20,
+        "notes": "VI danfos are frequent during work hours but slow in evening rush."
+      }
+    ]
+  },
+  {
+    "route_id": "lekki-phase-1-to-cms",
+    "origin_id": "lekki-phase-1",
+    "destination_id": "cms-lagos-island",
+    "origin_label": "Lekki Phase 1",
+    "destination_label": "CMS (Lagos Island)",
+    "total_fare_min": 350,
+    "total_fare_max": 500,
+    "total_duration_estimate_mins": 60,
+    "last_verified": "2026-05-10",
+    "confidence": "high",
+    "flagged": false,
+    "legs": [
+      {
+        "leg_id": "leg_01",
+        "step_number": 1,
+        "vehicle": "danfo",
+        "board_landmark": "Lekki Phase 1 Gate bus stop (Admiralty Way entrance)",
+        "board_instruction": "Board any danfo heading towards CMS or Lagos Island. Tell the conductor 'CMS' or 'Ozumba'.",
+        "alight_landmark": "Ozumba Mbadiwe Bus Stop, opposite First Bank",
+        "alight_instruction": "Drop at Ozumba — look for the big junction with the petrol station. Cross to the other side for the next bus.",
+        "fare_min": 150,
+        "fare_max": 200,
+        "duration_estimate_mins": 25,
+        "notes": "Morning traffic on Lekki-Epe Expressway can be brutal. Leave before 6:30am or after 9am."
+      },
+      {
+        "leg_id": "leg_02",
+        "step_number": 2,
+        "vehicle": "danfo",
+        "board_landmark": "Ozumba Mbadiwe Junction, CMS-bound side",
+        "board_instruction": "Board a danfo going to CMS. Tell the conductor 'CMS' or 'Marina'.",
+        "alight_landmark": "CMS Bus Stop, Lagos Island — near First Bank head office",
+        "alight_instruction": "Drop at CMS — the bus ends near the flyover. You've arrived at Lagos Island.",
+        "fare_min": 200,
+        "fare_max": 300,
+        "duration_estimate_mins": 35,
+        "notes": "The stretch from V/I to CMS moves faster than Lekki to V/I."
+      }
+    ]
+  },
+  {
+    "route_id": "ikorodu-to-oshodi",
+    "origin_id": "ikorodu",
+    "destination_id": "oshodi",
+    "origin_label": "Ikorodu",
+    "destination_label": "Oshodi",
+    "total_fare_min": 200,
+    "total_fare_max": 300,
+    "total_duration_estimate_mins": 90,
+    "last_verified": "2026-04-28",
+    "confidence": "high",
+    "flagged": false,
+    "legs": [
+      {
+        "leg_id": "leg_01",
+        "step_number": 1,
+        "vehicle": "brt",
+        "board_landmark": "Ikorodu BRT Terminal (Ikorodu Garage)",
+        "board_instruction": "Board the BRT bus heading to Oshodi or TBS. Buy your ticket at the terminal kiosk — fare is paid upfront.",
+        "alight_landmark": "Oshodi BRT Terminal",
+        "alight_instruction": "Ride all the way to Oshodi Terminal. Exit onto the main interchange — you're at Oshodi.",
+        "fare_min": 200,
+        "fare_max": 300,
+        "duration_estimate_mins": 90,
+        "notes": "BRT from Ikorodu is the fastest option. Buses run every 20–30 minutes from 5:30am. Avoid peak hours (7–9am) if possible."
+      }
+    ]
+  },
+  {
+    "route_id": "surulere-to-ikeja",
+    "origin_id": "surulere",
+    "destination_id": "ikeja",
+    "origin_label": "Surulere",
+    "destination_label": "Ikeja",
+    "total_fare_min": 250,
+    "total_fare_max": 350,
+    "total_duration_estimate_mins": 45,
+    "last_verified": "2026-05-22",
+    "confidence": "high",
+    "flagged": false,
+    "legs": [
+      {
+        "leg_id": "leg_01",
+        "step_number": 1,
+        "vehicle": "danfo",
+        "board_landmark": "Aguda Bus Stop, Adeniran Ogunsanya Street (near Shoprite Surulere)",
+        "board_instruction": "Board a danfo heading to Oshodi. Tell the conductor 'Oshodi'.",
+        "alight_landmark": "Oshodi Terminal, near the under-bridge",
+        "alight_instruction": "Drop at Oshodi — the bus stops under or near the bridge. Head to the Ikeja-bound loading area.",
+        "fare_min": 150,
+        "fare_max": 200,
+        "duration_estimate_mins": 30,
+        "notes": "There are direct danfos from Aguda to Oshodi — no need to change at Ojuelegba."
+      },
+      {
+        "leg_id": "leg_02",
+        "step_number": 2,
+        "vehicle": "danfo",
+        "board_landmark": "Oshodi Terminal, Ikeja-bound loading bay",
+        "board_instruction": "Board a danfo to Ikeja Along. Tell the conductor 'Ikeja' or 'Along'.",
+        "alight_landmark": "Ikeja Along, near the police station junction",
+        "alight_instruction": "Drop at Ikeja Along when you reach the junction. You're in the heart of Ikeja.",
+        "fare_min": 100,
+        "fare_max": 150,
+        "duration_estimate_mins": 15
+      }
+    ]
+  },
+  {
+    "route_id": "agege-to-cms",
+    "origin_id": "agege",
+    "destination_id": "cms-lagos-island",
+    "origin_label": "Agege",
+    "destination_label": "CMS (Lagos Island)",
+    "total_fare_min": 200,
+    "total_fare_max": 350,
+    "total_duration_estimate_mins": 65,
+    "last_verified": "2026-05-05",
+    "confidence": "medium",
+    "flagged": false,
+    "legs": [
+      {
+        "leg_id": "leg_01",
+        "step_number": 1,
+        "vehicle": "danfo",
+        "board_landmark": "Pen Cinema Bus Stop, Agege (Old Abeokuta Motor Road)",
+        "board_instruction": "Board a danfo heading to Oshodi or Ikeja. Tell the conductor 'Oshodi'.",
+        "alight_landmark": "Oshodi Terminal, near the BRT platform",
+        "alight_instruction": "Drop at Oshodi and walk to the BRT boarding platform on the far side of the terminal.",
+        "fare_min": 100,
+        "fare_max": 150,
+        "duration_estimate_mins": 20
+      },
+      {
+        "leg_id": "leg_02",
+        "step_number": 2,
+        "vehicle": "brt",
+        "board_landmark": "Oshodi BRT Terminal (TBS-bound platform)",
+        "board_instruction": "Board the BRT bus to TBS/CMS. Buy your ticket at the kiosk before boarding.",
+        "alight_landmark": "TBS Bus Stop, Lagos Island",
+        "alight_instruction": "Ride to TBS. CMS is a short walk or keke ride from TBS.",
+        "fare_min": 100,
+        "fare_max": 200,
+        "duration_estimate_mins": 45,
+        "notes": "BRT is faster and more comfortable than a danfo all the way from Agege to Lagos Island."
+      }
+    ]
+  },
+  {
+    "route_id": "maryland-to-cms",
+    "origin_id": "maryland",
+    "destination_id": "cms-lagos-island",
+    "origin_label": "Maryland",
+    "destination_label": "CMS (Lagos Island)",
+    "total_fare_min": 200,
+    "total_fare_max": 300,
+    "total_duration_estimate_mins": 40,
+    "last_verified": "2026-05-12",
+    "confidence": "high",
+    "flagged": false,
+    "legs": [
+      {
+        "leg_id": "leg_01",
+        "step_number": 1,
+        "vehicle": "danfo",
+        "board_landmark": "Maryland Bus Stop, Ikorodu Road (opposite Maryland Mall)",
+        "board_instruction": "Board a danfo heading to CMS, Lagos Island, or TBS. Tell the conductor 'CMS' or 'TBS'.",
+        "alight_landmark": "CMS Bus Stop, Lagos Island",
+        "alight_instruction": "The bus travels down Ikorodu Road past Ojota and over the bridge. Drop at CMS.",
+        "fare_min": 200,
+        "fare_max": 300,
+        "duration_estimate_mins": 40,
+        "notes": "Direct danfos to CMS run frequently from Maryland. The journey covers Ojota, Anthony, and the bridge."
+      }
+    ]
+  },
+  {
+    "route_id": "festac-to-cms",
+    "origin_id": "festac",
+    "destination_id": "cms-lagos-island",
+    "origin_label": "Festac Town",
+    "destination_label": "CMS (Lagos Island)",
+    "total_fare_min": 250,
+    "total_fare_max": 350,
+    "total_duration_estimate_mins": 50,
+    "last_verified": "2026-05-08",
+    "confidence": "high",
+    "flagged": false,
+    "legs": [
+      {
+        "leg_id": "leg_01",
+        "step_number": 1,
+        "vehicle": "danfo",
+        "board_landmark": "Festac Interchange Bus Stop (1st Avenue junction)",
+        "board_instruction": "Board a danfo heading to Mile 2. Tell the conductor 'Mile 2' or 'Cele'.",
+        "alight_landmark": "Mile 2 Bus Stop (Cele Junction)",
+        "alight_instruction": "Drop at Mile 2. The Cele junction is a busy interchange — cross to the CMS-bound bus stop.",
+        "fare_min": 100,
+        "fare_max": 150,
+        "duration_estimate_mins": 15
+      },
+      {
+        "leg_id": "leg_02",
+        "step_number": 2,
+        "vehicle": "danfo",
+        "board_landmark": "Mile 2 Bus Stop, CMS-bound side (near the filling station)",
+        "board_instruction": "Board a danfo going to CMS or Apapa Road. Tell the conductor 'CMS' or 'Marina'.",
+        "alight_landmark": "CMS Bus Stop, Lagos Island",
+        "alight_instruction": "Drop at CMS near the overhead bridge. Watch for the conductor's signal.",
+        "fare_min": 150,
+        "fare_max": 200,
+        "duration_estimate_mins": 35,
+        "notes": "The road from Mile 2 to CMS can be slow during morning rush. The bridge stretch is the main pinch point."
+      }
+    ]
+  },
+  {
+    "route_id": "ajah-to-cms",
+    "origin_id": "ajah",
+    "destination_id": "cms-lagos-island",
+    "origin_label": "Ajah",
+    "destination_label": "CMS (Lagos Island)",
+    "total_fare_min": 500,
+    "total_fare_max": 750,
+    "total_duration_estimate_mins": 90,
+    "last_verified": "2026-04-20",
+    "confidence": "medium",
+    "flagged": false,
+    "legs": [
+      {
+        "leg_id": "leg_01",
+        "step_number": 1,
+        "vehicle": "danfo",
+        "board_landmark": "Ajah Roundabout Bus Stop (near Abraham Adesanya Estate gate)",
+        "board_instruction": "Board a danfo heading to Lekki or CMS. Tell the conductor 'Lekki' or 'CMS'.",
+        "alight_landmark": "Lekki Phase 1 Gate Bus Stop",
+        "alight_instruction": "Drop at Lekki Phase 1 Gate and wait for a faster CMS-bound bus if needed.",
+        "fare_min": 200,
+        "fare_max": 300,
+        "duration_estimate_mins": 30,
+        "notes": "Some buses go directly to CMS from Ajah — ask the conductor before boarding."
+      },
+      {
+        "leg_id": "leg_02",
+        "step_number": 2,
+        "vehicle": "danfo",
+        "board_landmark": "Lekki Phase 1 Gate, CMS-bound bus stop",
+        "board_instruction": "Board a danfo heading to CMS or Lagos Island. Tell the conductor 'CMS' or 'Marina'.",
+        "alight_landmark": "CMS Bus Stop, opposite First Bank, Lagos Island",
+        "alight_instruction": "Drop at CMS — the bus goes through Ozumba Mbadiwe and Victoria Island before arriving.",
+        "fare_min": 300,
+        "fare_max": 450,
+        "duration_estimate_mins": 60,
+        "notes": "The Lekki-VI corridor is notorious for go-slow. Friday evenings are the worst. Leave by 6am or after 10am."
+      }
+    ]
+  },
+  {
+    "route_id": "ojuelegba-to-ikeja",
+    "origin_id": "ojuelegba",
+    "destination_id": "ikeja",
+    "origin_label": "Ojuelegba",
+    "destination_label": "Ikeja",
+    "total_fare_min": 250,
+    "total_fare_max": 350,
+    "total_duration_estimate_mins": 40,
+    "last_verified": "2026-05-20",
+    "confidence": "high",
+    "flagged": false,
+    "legs": [
+      {
+        "leg_id": "leg_01",
+        "step_number": 1,
+        "vehicle": "danfo",
+        "board_landmark": "Ojuelegba Under-Bridge (Oshodi-facing side)",
+        "board_instruction": "Board a danfo heading to Oshodi. Tell the conductor 'Oshodi'.",
+        "alight_landmark": "Oshodi Terminal, near the BRT platform",
+        "alight_instruction": "Drop at Oshodi and walk to the Ikeja-bound loading bays.",
+        "fare_min": 150,
+        "fare_max": 200,
+        "duration_estimate_mins": 25
+      },
+      {
+        "leg_id": "leg_02",
+        "step_number": 2,
+        "vehicle": "danfo",
+        "board_landmark": "Oshodi Terminal, Ikeja-bound loading bay",
+        "board_instruction": "Board a danfo to Ikeja Along. Tell the conductor 'Ikeja' or 'Along'.",
+        "alight_landmark": "Ikeja Along Junction",
+        "alight_instruction": "Drop at the Ikeja Along junction. You'll see Unity Road on your left.",
+        "fare_min": 100,
+        "fare_max": 150,
+        "duration_estimate_mins": 15
+      }
+    ]
+  },
+  {
+    "route_id": "computer-village-to-cms",
+    "origin_id": "computer-village",
+    "destination_id": "cms-lagos-island",
+    "origin_label": "Computer Village (Ikeja)",
+    "destination_label": "CMS (Lagos Island)",
+    "total_fare_min": 200,
+    "total_fare_max": 350,
+    "total_duration_estimate_mins": 60,
+    "last_verified": "2026-05-14",
+    "confidence": "high",
+    "flagged": false,
+    "legs": [
+      {
+        "leg_id": "leg_01",
+        "step_number": 1,
+        "vehicle": "danfo",
+        "board_landmark": "Obafemi Awolowo Way Bus Stop (in front of Computer Village gate)",
+        "board_instruction": "Board a danfo heading to Oshodi. Tell the conductor 'Oshodi'.",
+        "alight_landmark": "Oshodi Terminal",
+        "alight_instruction": "Drop at Oshodi and walk to the BRT boarding area.",
+        "fare_min": 100,
+        "fare_max": 150,
+        "duration_estimate_mins": 15
+      },
+      {
+        "leg_id": "leg_02",
+        "step_number": 2,
+        "vehicle": "brt",
+        "board_landmark": "Oshodi BRT Terminal (TBS-bound platform)",
+        "board_instruction": "Board the BRT to TBS. Pay at the kiosk before boarding.",
+        "alight_landmark": "TBS BRT Stop, Lagos Island",
+        "alight_instruction": "Ride to TBS — the last stop. CMS is a 5-minute walk or a short keke ride.",
+        "fare_min": 100,
+        "fare_max": 200,
+        "duration_estimate_mins": 45,
+        "notes": "BRT is much faster than danfo from Oshodi to Lagos Island. Skip the danfo queue."
+      }
+    ]
+  },
+  {
+    "route_id": "ketu-to-cms",
+    "origin_id": "ketu",
+    "destination_id": "cms-lagos-island",
+    "origin_label": "Ketu",
+    "destination_label": "CMS (Lagos Island)",
+    "total_fare_min": 150,
+    "total_fare_max": 250,
+    "total_duration_estimate_mins": 50,
+    "last_verified": "2026-05-03",
+    "confidence": "high",
+    "flagged": false,
+    "legs": [
+      {
+        "leg_id": "leg_01",
+        "step_number": 1,
+        "vehicle": "brt",
+        "board_landmark": "Ketu BRT Bus Stop, Ikorodu Road",
+        "board_instruction": "Board the BRT bus to TBS or CMS. Pay at the kiosk — do not pay the conductor.",
+        "alight_landmark": "TBS BRT Stop, Lagos Island",
+        "alight_instruction": "Ride to TBS. CMS is a 5-minute keke ride or walk from TBS Bus Stop.",
+        "fare_min": 150,
+        "fare_max": 250,
+        "duration_estimate_mins": 50,
+        "notes": "The BRT from Ketu is direct and avoids the Ojota/Palmgrove go-slow. Buy your ticket at the platform — conductors do not collect cash."
+      }
+    ]
+  },
+  {
+    "route_id": "mile-2-to-cms",
+    "origin_id": "mile-2",
+    "destination_id": "cms-lagos-island",
+    "origin_label": "Mile 2",
+    "destination_label": "CMS (Lagos Island)",
+    "total_fare_min": 150,
+    "total_fare_max": 200,
+    "total_duration_estimate_mins": 35,
+    "last_verified": "2026-05-18",
+    "confidence": "high",
+    "flagged": false,
+    "legs": [
+      {
+        "leg_id": "leg_01",
+        "step_number": 1,
+        "vehicle": "danfo",
+        "board_landmark": "Mile 2 Bus Stop, CMS-bound side (near Cele junction)",
+        "board_instruction": "Board a danfo heading to CMS or Apapa Road. Tell the conductor 'CMS' or 'Marina'.",
+        "alight_landmark": "CMS Bus Stop, Lagos Island — opposite First Bank",
+        "alight_instruction": "Drop at CMS. The bus goes past Apapa Road and over the bridge. Watch for your stop.",
+        "fare_min": 150,
+        "fare_max": 200,
+        "duration_estimate_mins": 35,
+        "notes": "The road from Mile 2 to CMS via the Apapa bridge can be slow. Early morning (before 7am) is usually clear."
+      }
+    ]
+  },
+  {
+    "route_id": "iyana-ipaja-to-oshodi",
+    "origin_id": "iyana-ipaja",
+    "destination_id": "oshodi",
+    "origin_label": "Iyana Ipaja",
+    "destination_label": "Oshodi",
+    "total_fare_min": 150,
+    "total_fare_max": 200,
+    "total_duration_estimate_mins": 30,
+    "last_verified": "2026-05-25",
+    "confidence": "high",
+    "flagged": false,
+    "legs": [
+      {
+        "leg_id": "leg_01",
+        "step_number": 1,
+        "vehicle": "danfo",
+        "board_landmark": "Iyana Ipaja Bus Stop (Command Road junction)",
+        "board_instruction": "Board a danfo heading to Oshodi. Tell the conductor 'Oshodi' or 'Under-Bridge'.",
+        "alight_landmark": "Oshodi Terminal, under the bridge",
+        "alight_instruction": "Drop at Oshodi — the bus terminates here. You'll be right at the terminal.",
+        "fare_min": 150,
+        "fare_max": 200,
+        "duration_estimate_mins": 30,
+        "notes": "Danfos to Oshodi run continuously from Iyana Ipaja. The Agege Motor Road stretch can slow down in the afternoon."
+      }
+    ]
+  },
+  {
+    "route_id": "apapa-to-cms",
+    "origin_id": "apapa",
+    "destination_id": "cms-lagos-island",
+    "origin_label": "Apapa",
+    "destination_label": "CMS (Lagos Island)",
+    "total_fare_min": 100,
+    "total_fare_max": 150,
+    "total_duration_estimate_mins": 15,
+    "last_verified": "2026-05-20",
+    "confidence": "high",
+    "flagged": false,
+    "legs": [
+      {
+        "leg_id": "leg_01",
+        "step_number": 1,
+        "vehicle": "danfo",
+        "board_landmark": "Apapa Bus Stop, near Creek Road junction",
+        "board_instruction": "Board a danfo heading to CMS. Tell the conductor 'CMS' or 'Marina'.",
+        "alight_landmark": "CMS Bus Stop, Lagos Island",
+        "alight_instruction": "Short ride across the Apapa bridge. Drop at CMS — you'll see the First Bank building.",
+        "fare_min": 100,
+        "fare_max": 150,
+        "duration_estimate_mins": 15,
+        "notes": "Apapa to CMS is one of the shortest trips on this list — but Apapa traffic can make it feel longer. Danfos are very frequent."
+      }
+    ]
+  },
+  {
+    "route_id": "mushin-to-yaba",
+    "origin_id": "mushin",
+    "destination_id": "yaba",
+    "origin_label": "Mushin",
+    "destination_label": "Yaba",
+    "total_fare_min": 100,
+    "total_fare_max": 200,
+    "total_duration_estimate_mins": 20,
+    "last_verified": "2026-06-01",
+    "confidence": "high",
+    "flagged": false,
+    "legs": [
+      {
+        "leg_id": "leg_01",
+        "step_number": 1,
+        "vehicle": "danfo",
+        "board_landmark": "Mushin Market Bus Stop (Idi-Oro Road)",
+        "board_instruction": "Board a danfo heading to Yaba or Ojuelegba. Tell the conductor 'Yaba' or 'Ojuelegba'.",
+        "alight_landmark": "Yaba Bus Stop, near Herbert Macaulay junction",
+        "alight_instruction": "Drop at Yaba junction. You'll see the pedestrian bridge and the market on your right.",
+        "fare_min": 100,
+        "fare_max": 200,
+        "duration_estimate_mins": 20,
+        "notes": "Direct danfos between Mushin and Yaba run all day. It's a short, busy route."
+      }
+    ]
+  },
+  {
+    "route_id": "palmgrove-to-cms",
+    "origin_id": "palmgrove",
+    "destination_id": "cms-lagos-island",
+    "origin_label": "Palmgrove",
+    "destination_label": "CMS (Lagos Island)",
+    "total_fare_min": 400,
+    "total_fare_max": 600,
+    "total_duration_estimate_mins": 70,
+    "last_verified": "2026-05-16",
+    "confidence": "medium",
+    "flagged": false,
+    "legs": [
+      {
+        "leg_id": "leg_01",
+        "step_number": 1,
+        "vehicle": "danfo",
+        "board_landmark": "Palmgrove Bus Stop, Ikorodu Road (near Jibowu junction)",
+        "board_instruction": "Board a danfo heading to Ojuelegba. Tell the conductor 'Ojuelegba' or 'Ojue'.",
+        "alight_landmark": "Ojuelegba Bus Stop, under the bridge",
+        "alight_instruction": "Drop at Ojuelegba and cross to the CMS-bound side under the bridge.",
+        "fare_min": 100,
+        "fare_max": 150,
+        "duration_estimate_mins": 15
+      },
+      {
+        "leg_id": "leg_02",
+        "step_number": 2,
+        "vehicle": "danfo",
+        "board_landmark": "Ojuelegba Under-Bridge, CMS-facing side",
+        "board_instruction": "Board a danfo heading to CMS. Tell the conductor 'CMS' or 'Marina'.",
+        "alight_landmark": "CMS Bus Stop, Lagos Island",
+        "alight_instruction": "Drop at CMS near the overhead bridge — end of the line.",
+        "fare_min": 300,
+        "fare_max": 450,
+        "duration_estimate_mins": 55,
+        "notes": "If you catch a direct danfo from Palmgrove to CMS, take it — saves a connection."
+      }
+    ]
+  },
+  {
+    "route_id": "berger-to-ikeja",
+    "origin_id": "berger",
+    "destination_id": "ikeja",
+    "origin_label": "Berger (Ojodu)",
+    "destination_label": "Ikeja",
+    "total_fare_min": 150,
+    "total_fare_max": 200,
+    "total_duration_estimate_mins": 25,
+    "last_verified": "2026-05-28",
+    "confidence": "high",
+    "flagged": false,
+    "legs": [
+      {
+        "leg_id": "leg_01",
+        "step_number": 1,
+        "vehicle": "danfo",
+        "board_landmark": "Ojodu Berger Bus Stop (Lagos-Ibadan Expressway service road)",
+        "board_instruction": "Board a danfo heading to Ikeja. Tell the conductor 'Ikeja' or 'Secretariat'.",
+        "alight_landmark": "Ikeja Along Junction or Secretariat Bus Stop",
+        "alight_instruction": "Drop at Ikeja Along or the Secretariat — both are central Ikeja.",
+        "fare_min": 150,
+        "fare_max": 200,
+        "duration_estimate_mins": 25,
+        "notes": "Berger to Ikeja is a straight shot down Lagos-Ibadan Expressway. Quick when traffic is moving."
+      }
+    ]
+  },
+  {
+    "route_id": "ojota-to-cms",
+    "origin_id": "ojota",
+    "destination_id": "cms-lagos-island",
+    "origin_label": "Ojota",
+    "destination_label": "CMS (Lagos Island)",
+    "total_fare_min": 150,
+    "total_fare_max": 250,
+    "total_duration_estimate_mins": 50,
+    "last_verified": "2026-05-02",
+    "confidence": "high",
+    "flagged": false,
+    "legs": [
+      {
+        "leg_id": "leg_01",
+        "step_number": 1,
+        "vehicle": "brt",
+        "board_landmark": "Ojota BRT Bus Stop, Ikorodu Road",
+        "board_instruction": "Board the BRT bus to TBS or CMS. Pay at the kiosk on the platform.",
+        "alight_landmark": "TBS Bus Stop, Lagos Island",
+        "alight_instruction": "Ride through Maryland, Palmgrove, Yaba, and Costain to TBS. Walk or take a keke to CMS.",
+        "fare_min": 150,
+        "fare_max": 250,
+        "duration_estimate_mins": 50,
+        "notes": "The BRT is the fastest way from Ojota to Lagos Island. Avoids the notorious Ikorodu Road go-slow."
+      }
+    ]
+  },
+  {
+    "route_id": "lekki-phase-1-to-ikeja",
+    "origin_id": "lekki-phase-1",
+    "destination_id": "ikeja",
+    "origin_label": "Lekki Phase 1",
+    "destination_label": "Ikeja",
+    "total_fare_min": 500,
+    "total_fare_max": 800,
+    "total_duration_estimate_mins": 120,
+    "last_verified": "2026-04-15",
+    "confidence": "medium",
+    "flagged": false,
+    "legs": [
+      {
+        "leg_id": "leg_01",
+        "step_number": 1,
+        "vehicle": "danfo",
+        "board_landmark": "Lekki Phase 1 Gate Bus Stop",
+        "board_instruction": "Board a danfo to CMS or Lagos Island. Tell the conductor 'CMS'.",
+        "alight_landmark": "CMS Bus Stop, Lagos Island",
+        "alight_instruction": "Drop at CMS and walk to the TBS BRT platform nearby.",
+        "fare_min": 300,
+        "fare_max": 450,
+        "duration_estimate_mins": 60,
+        "notes": "This is a long multi-leg journey. Budget at least 2 hours and carry enough cash."
+      },
+      {
+        "leg_id": "leg_02",
+        "step_number": 2,
+        "vehicle": "brt",
+        "board_landmark": "TBS BRT Platform (near CMS, Lagos Island)",
+        "board_instruction": "Board the BRT to Oshodi. Pay at the kiosk.",
+        "alight_landmark": "Oshodi BRT Terminal",
+        "alight_instruction": "Ride to Oshodi Terminal. Cross to the Ikeja-bound danfo loading area.",
+        "fare_min": 100,
+        "fare_max": 200,
+        "duration_estimate_mins": 45
+      },
+      {
+        "leg_id": "leg_03",
+        "step_number": 3,
+        "vehicle": "danfo",
+        "board_landmark": "Oshodi Terminal, Ikeja-bound loading bay",
+        "board_instruction": "Board a danfo to Ikeja Along. Tell the conductor 'Ikeja' or 'Along'.",
+        "alight_landmark": "Ikeja Along Junction",
+        "alight_instruction": "Drop at Ikeja Along — you've arrived.",
+        "fare_min": 100,
+        "fare_max": 150,
+        "duration_estimate_mins": 15
+      }
+    ]
+  },
+  {
+    "route_id": "victoria-island-to-ikeja",
+    "origin_id": "victoria-island",
+    "destination_id": "ikeja",
+    "origin_label": "Victoria Island",
+    "destination_label": "Ikeja",
+    "total_fare_min": 350,
+    "total_fare_max": 550,
+    "total_duration_estimate_mins": 80,
+    "last_verified": "2026-05-10",
+    "confidence": "high",
+    "flagged": false,
+    "legs": [
+      {
+        "leg_id": "leg_01",
+        "step_number": 1,
+        "vehicle": "danfo",
+        "board_landmark": "Eko Hotel Bus Stop, Ahmadu Bello Way (VI)",
+        "board_instruction": "Board a danfo heading to CMS or TBS. Tell the conductor 'CMS' or 'TBS'.",
+        "alight_landmark": "TBS Bus Stop, Lagos Island",
+        "alight_instruction": "Drop at TBS and cross to the BRT platform on the median.",
+        "fare_min": 150,
+        "fare_max": 200,
+        "duration_estimate_mins": 20
+      },
+      {
+        "leg_id": "leg_02",
+        "step_number": 2,
+        "vehicle": "brt",
+        "board_landmark": "TBS BRT Platform, Lagos Island",
+        "board_instruction": "Board the BRT to Oshodi. Pay at the kiosk — no cash to conductor.",
+        "alight_landmark": "Oshodi BRT Terminal",
+        "alight_instruction": "Ride all the way to Oshodi. Walk to the Ikeja-bound danfo loading area.",
+        "fare_min": 100,
+        "fare_max": 200,
+        "duration_estimate_mins": 45
+      },
+      {
+        "leg_id": "leg_03",
+        "step_number": 3,
+        "vehicle": "danfo",
+        "board_landmark": "Oshodi Terminal, Ikeja-bound loading bay",
+        "board_instruction": "Board a danfo to Ikeja Along. Tell the conductor 'Ikeja'.",
+        "alight_landmark": "Ikeja Along Junction",
+        "alight_instruction": "Drop at Ikeja Along. You've arrived in Ikeja.",
+        "fare_min": 100,
+        "fare_max": 150,
+        "duration_estimate_mins": 15
+      }
+    ]
+  },
+  {
+    "route_id": "festac-to-oshodi",
+    "origin_id": "festac",
+    "destination_id": "oshodi",
+    "origin_label": "Festac Town",
+    "destination_label": "Oshodi",
+    "total_fare_min": 250,
+    "total_fare_max": 350,
+    "total_duration_estimate_mins": 45,
+    "last_verified": "2026-05-08",
+    "confidence": "high",
+    "flagged": false,
+    "legs": [
+      {
+        "leg_id": "leg_01",
+        "step_number": 1,
+        "vehicle": "danfo",
+        "board_landmark": "Festac Interchange Bus Stop (1st Avenue, near the gate)",
+        "board_instruction": "Board a danfo to Mile 2. Tell the conductor 'Mile 2' or 'Cele'.",
+        "alight_landmark": "Mile 2 Bus Stop (Cele Junction)",
+        "alight_instruction": "Drop at Mile 2 and find the Oshodi-bound bus stop.",
+        "fare_min": 100,
+        "fare_max": 150,
+        "duration_estimate_mins": 15
+      },
+      {
+        "leg_id": "leg_02",
+        "step_number": 2,
+        "vehicle": "danfo",
+        "board_landmark": "Mile 2 Bus Stop, Oshodi-bound side",
+        "board_instruction": "Board a danfo heading to Oshodi. Tell the conductor 'Oshodi'.",
+        "alight_landmark": "Oshodi Terminal, under the bridge",
+        "alight_instruction": "Drop at Oshodi Terminal. The journey goes past Alaba and Isolo.",
+        "fare_min": 150,
+        "fare_max": 200,
+        "duration_estimate_mins": 30,
+        "notes": "The Festac-Oshodi route via Mile 2 is well-served. Avoid Isolo Road during rush hours."
+      }
+    ]
+  },
+  {
+    "route_id": "abule-egba-to-ikeja",
+    "origin_id": "abule-egba",
+    "destination_id": "ikeja",
+    "origin_label": "Abule Egba",
+    "destination_label": "Ikeja",
+    "total_fare_min": 250,
+    "total_fare_max": 350,
+    "total_duration_estimate_mins": 40,
+    "last_verified": "2026-06-01",
+    "confidence": "high",
+    "flagged": false,
+    "legs": [
+      {
+        "leg_id": "leg_01",
+        "step_number": 1,
+        "vehicle": "danfo",
+        "board_landmark": "Abule Egba Bus Stop (Abeokuta Expressway, near the mosque)",
+        "board_instruction": "Board a danfo heading to Agege or Pen Cinema. Tell the conductor 'Agege' or 'Pen Cinema'.",
+        "alight_landmark": "Agege Bus Stop, near Pen Cinema",
+        "alight_instruction": "Drop at Agege and look for the Ikeja-bound danfo across the road.",
+        "fare_min": 100,
+        "fare_max": 150,
+        "duration_estimate_mins": 20
+      },
+      {
+        "leg_id": "leg_02",
+        "step_number": 2,
+        "vehicle": "danfo",
+        "board_landmark": "Agege Bus Stop, Ikeja-bound side",
+        "board_instruction": "Board a danfo to Ikeja or Oshodi. Tell the conductor 'Ikeja' or 'Along'.",
+        "alight_landmark": "Ikeja Along Junction",
+        "alight_instruction": "Drop at Ikeja Along — it's a busy junction with shops on both sides.",
+        "fare_min": 150,
+        "fare_max": 200,
+        "duration_estimate_mins": 20,
+        "notes": "Agege to Ikeja is a direct route. Buses run frequently throughout the day."
+      }
+    ]
+  },
+  {
+    "route_id": "sangotedo-to-cms",
+    "origin_id": "sangotedo",
+    "destination_id": "cms-lagos-island",
+    "origin_label": "Sangotedo",
+    "destination_label": "CMS (Lagos Island)",
+    "total_fare_min": 600,
+    "total_fare_max": 850,
+    "total_duration_estimate_mins": 105,
+    "last_verified": "2026-04-10",
+    "confidence": "medium",
+    "flagged": false,
+    "legs": [
+      {
+        "leg_id": "leg_01",
+        "step_number": 1,
+        "vehicle": "danfo",
+        "board_landmark": "Sangotedo Bus Stop (Monastery Road, near Novare Shoprite)",
+        "board_instruction": "Board a danfo heading to Ajah. Tell the conductor 'Ajah' or 'Roundabout'.",
+        "alight_landmark": "Ajah Roundabout Bus Stop",
+        "alight_instruction": "Drop at Ajah Roundabout. Cross to the Lagos Island / CMS-bound bus stop.",
+        "fare_min": 100,
+        "fare_max": 150,
+        "duration_estimate_mins": 15
+      },
+      {
+        "leg_id": "leg_02",
+        "step_number": 2,
+        "vehicle": "danfo",
+        "board_landmark": "Ajah Roundabout, CMS-bound bus stop",
+        "board_instruction": "Board a danfo heading to CMS or Lagos Island. Tell the conductor 'CMS' or 'Marina'. Confirm the bus goes through Lekki and VI.",
+        "alight_landmark": "CMS Bus Stop, Lagos Island — near First Bank",
+        "alight_instruction": "Ride through Lekki Phase 1, Ozumba Mbadiwe, and Victoria Island to reach CMS. Drop at the overhead bridge stop.",
+        "fare_min": 500,
+        "fare_max": 700,
+        "duration_estimate_mins": 90,
+        "notes": "Sangotedo to CMS is a long journey. Budget 2+ hours during peak. The Lekki-Epe Expressway is notoriously congested by 7am."
+      }
+    ]
+  }
+]
