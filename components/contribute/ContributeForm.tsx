@@ -1,16 +1,17 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import type { ContributionType } from '@/lib/supabase';
+import type { Route } from '@/types/route';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
-type VehicleOption = 'Danfo' | 'Korope' | 'Keke' | 'BRT' | 'Walk';
+type VehicleOption = 'Danfo' | 'Korope' | 'Keke' | 'BRT' | 'Okada' | 'Ferry' | 'Walk';
+const VEHICLE_OPTIONS: VehicleOption[] = ['Danfo', 'Korope', 'Keke', 'BRT', 'Okada', 'Ferry', 'Walk'];
 
-const VEHICLE_OPTIONS: VehicleOption[] = ['Danfo', 'Korope', 'Keke', 'BRT', 'Walk'];
-
+// new_route legs
 interface Leg {
   id: string;
   boarding_point: string;
@@ -40,6 +41,48 @@ function serializeLegs(legs: Leg[]): string {
     .join('\n\n');
 }
 
+// correction edit legs
+interface EditLeg {
+  leg_id: string;
+  board_landmark: string;
+  vehicle: string;
+  fare_min: string;
+  fare_max: string;
+  alight_landmark: string;
+  board_instruction: string;
+  alight_instruction: string;
+  notes: string;
+}
+
+const vehicleDisplayMap: Record<string, string> = {
+  danfo: 'Danfo', brt: 'BRT', korope: 'Korope', keke: 'Keke',
+  okada: 'Okada', ferry: 'Ferry', walk: 'Walk',
+};
+
+function routeLegToEditLeg(leg: Route['legs'][0]): EditLeg {
+  return {
+    leg_id: leg.leg_id,
+    board_landmark: leg.board_landmark ?? '',
+    vehicle: vehicleDisplayMap[leg.vehicle] ?? leg.vehicle,
+    fare_min: leg.fare_min != null ? String(leg.fare_min) : '',
+    fare_max: leg.fare_max != null ? String(leg.fare_max) : '',
+    alight_landmark: leg.alight_landmark ?? '',
+    board_instruction: leg.board_instruction ?? '',
+    alight_instruction: leg.alight_instruction ?? '',
+    notes: leg.notes ?? '',
+  };
+}
+
+type CorrectionMode = 'flag' | 'edit';
+
+const FLAG_OPTIONS = [
+  { id: 'wrong_fare',     label: 'Fare is wrong' },
+  { id: 'wrong_landmark', label: 'Boarding point changed' },
+  { id: 'wrong_vehicle',  label: 'Vehicle type is wrong' },
+  { id: 'route_closed',   label: 'Route no longer exists' },
+  { id: 'other',          label: 'Other' },
+] as const;
+
 // ── Props ──────────────────────────────────────────────────────────────────────
 
 interface ContributeFormProps {
@@ -49,6 +92,7 @@ interface ContributeFormProps {
   prefillOrigin?: string;
   prefillDestination?: string;
   stopNames?: string[];
+  route?: Route | null;
 }
 
 // ── Main component ─────────────────────────────────────────────────────────────
@@ -60,28 +104,40 @@ export function ContributeForm({
   prefillOrigin,
   prefillDestination,
   stopNames = [],
+  route,
 }: ContributeFormProps) {
-  const [origin, setOrigin] = useState(prefillOrigin ?? '');
-  const [destination, setDestination] = useState(prefillDestination ?? '');
-  const [description, setDescription] = useState(''); // used for corrections only
+  // Shared
   const [contact, setContact] = useState('');
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const [formError, setFormError] = useState('');
 
-  // Leg builder (new_route only)
+  // new_route
+  const [origin, setOrigin] = useState(prefillOrigin ?? '');
+  const [destination, setDestination] = useState(prefillDestination ?? '');
   const counterRef = useRef(0);
   function nextId() { return `leg-${++counterRef.current}`; }
   const [legs, setLegs] = useState<Leg[]>(() => [blankLeg(nextId())]);
   const [legErrors, setLegErrors] = useState<Record<string, string>>({});
 
-  // ── Leg helpers ──────────────────────────────────────────────────────────────
+  // correction — flag mode
+  const [correctionMode, setCorrectionMode] = useState<CorrectionMode>('edit');
+  const [flagged, setFlagged] = useState<Set<string>>(new Set());
+  const [flagNotes, setFlagNotes] = useState('');
+
+  // correction — edit mode
+  const [editLegs, setEditLegs] = useState<EditLeg[]>(() =>
+    route?.legs.map(routeLegToEditLeg) ?? []
+  );
+  const [changeNotes, setChangeNotes] = useState('');
+
+  // ── Leg helpers (new_route) ──────────────────────────────────────────────────
 
   function updateLeg(id: string, patch: Partial<Leg>) {
     setLegs((prev) =>
       prev.map((l) => {
         if (l.id !== id) return l;
         const updated = { ...l, ...patch };
-        // Auto-zero fares when Walk is selected
         if (patch.vehicle_type === 'Walk') {
           updated.fare_min = '0';
           updated.fare_max = '0';
@@ -89,19 +145,11 @@ export function ContributeForm({
         return updated;
       })
     );
-    // Clear per-leg error on any edit
     setLegErrors((prev) => { const n = { ...prev }; delete n[id]; return n; });
   }
 
-  function addLeg() {
-    setLegs((prev) => [...prev, blankLeg(nextId())]);
-  }
-
-  function removeLeg(id: string) {
-    setLegs((prev) => prev.filter((l) => l.id !== id));
-  }
-
-  // ── Validation ───────────────────────────────────────────────────────────────
+  function addLeg() { setLegs((prev) => [...prev, blankLeg(nextId())]); }
+  function removeLeg(id: string) { setLegs((prev) => prev.filter((l) => l.id !== id)); }
 
   function validateLegs(): boolean {
     const errors: Record<string, string> = {};
@@ -119,31 +167,63 @@ export function ContributeForm({
     return Object.keys(errors).length === 0;
   }
 
+  // ── Edit-leg helpers (correction) ───────────────────────────────────────────
+
+  function updateEditLeg(legId: string, patch: Partial<EditLeg>) {
+    setEditLegs((prev) => prev.map((l) => l.leg_id === legId ? { ...l, ...patch } : l));
+  }
+
+  function removeEditLeg(legId: string) {
+    setEditLegs((prev) => prev.filter((l) => l.leg_id !== legId));
+  }
+
+  function resetEditLegs() {
+    setEditLegs(route?.legs.map(routeLegToEditLeg) ?? []);
+    setChangeNotes('');
+  }
+
   // ── Submit ───────────────────────────────────────────────────────────────────
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setFormError('');
     setErrorMsg('');
 
-    if (type === 'new_route' && !validateLegs()) return;
+    let description = '';
+
+    if (type === 'new_route') {
+      if (!validateLegs()) return;
+      description = serializeLegs(legs);
+    } else {
+      // correction
+      const inFlagMode = !route || correctionMode === 'flag';
+      if (inFlagMode) {
+        if (flagged.size === 0 && !flagNotes.trim()) {
+          setFormError('Please select at least one issue or describe the problem.');
+          return;
+        }
+        const issueLabels = FLAG_OPTIONS
+          .filter((o) => flagged.has(o.id))
+          .map((o) => o.label);
+        const issueStr = issueLabels.length ? issueLabels.join(', ') : 'Other';
+        description = `[FLAG]\nIssues: ${issueStr}${flagNotes.trim() ? `\nNotes: ${flagNotes.trim()}` : ''}`;
+      } else {
+        // edit mode — serialize proposed route as JSON
+        description =
+          `[ROUTE EDIT - PENDING REVIEW]\n` +
+          JSON.stringify({
+            proposed_legs: editLegs,
+            change_notes: changeNotes.trim() || undefined,
+          });
+      }
+    }
 
     setSubmitStatus('loading');
     try {
       const body =
-        type === 'correction'
-          ? {
-              type,
-              route_id: routeId,
-              description,
-              submitter_contact: contact || undefined,
-            }
-          : {
-              type,
-              origin,
-              destination,
-              description: serializeLegs(legs),
-              submitter_contact: contact || undefined,
-            };
+        type === 'new_route'
+          ? { type, origin, destination, description, submitter_contact: contact || undefined }
+          : { type: 'correction', route_id: routeId, description, submitter_contact: contact || undefined };
 
       const res = await fetch('/api/contribute', {
         method: 'POST',
@@ -159,7 +239,7 @@ export function ContributeForm({
     }
   }
 
-  // ── Success state ─────────────────────────────────────────────────────────────
+  // ── Success ───────────────────────────────────────────────────────────────────
 
   if (submitStatus === 'success') {
     return (
@@ -183,109 +263,209 @@ export function ContributeForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
 
-      {/* Stop-name datalist — shared by origin + destination inputs */}
       {stopNames.length > 0 && (
         <datalist id="owa-stops">
-          {stopNames.map((name) => (
-            <option key={name} value={name} />
-          ))}
+          {stopNames.map((name) => <option key={name} value={name} />)}
         </datalist>
       )}
 
-      {/* ── Correction context banner ── */}
-      {type === 'correction' && routeLabel && (
-        <div className="rounded-lg bg-gray-50 px-3 py-2 text-sm text-gray-600">
-          Route: <span className="font-semibold">{routeLabel}</span>
-        </div>
-      )}
-
-      {/* ── New route: Origin + Destination ── */}
-      {type === 'new_route' && (
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label htmlFor="origin" className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
-              Origin *
-            </label>
-            <input
-              id="origin"
-              type="text"
-              list="owa-stops"
-              required
-              value={origin}
-              onChange={(e) => setOrigin(e.target.value)}
-              placeholder="e.g. Ojuelegba"
-              className={inputCls}
-            />
-          </div>
-          <div>
-            <label htmlFor="destination" className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
-              Destination *
-            </label>
-            <input
-              id="destination"
-              type="text"
-              list="owa-stops"
-              required
-              value={destination}
-              onChange={(e) => setDestination(e.target.value)}
-              placeholder="e.g. Ketu Garage"
-              className={inputCls}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* ── New route: Leg builder ── */}
-      {type === 'new_route' && (
-        <div className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-            Route legs *
-          </p>
-
-          {legs.map((leg, index) => (
-            <LegCard
-              key={leg.id}
-              leg={leg}
-              index={index}
-              canRemove={legs.length > 1}
-              error={legErrors[leg.id]}
-              onChange={(patch) => updateLeg(leg.id, patch)}
-              onRemove={() => removeLeg(leg.id)}
-            />
-          ))}
-
-          <button
-            type="button"
-            onClick={addLeg}
-            className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed
-              border-gray-300 py-2.5 text-sm font-medium text-gray-500 hover:border-owa-green
-              hover:text-owa-green transition-colors"
-          >
-            <Plus size={15} />
-            Add leg
-          </button>
-        </div>
-      )}
-
-      {/* ── Correction: free-text description ── */}
+      {/* ── CORRECTION ── */}
       {type === 'correction' && (
-        <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-            What&apos;s wrong and what should it say? *
-          </label>
-          <textarea
-            id="description"
-            required
-            rows={5}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="e.g. The boarding point is wrong — it should be in front of GTB, not Ecobank. Fare is also outdated, it's now ₦500."
-            className={`${inputCls} resize-none`}
-          />
-        </div>
+        <>
+          {/* Route context card */}
+          {routeLabel && (
+            <div className="rounded-lg bg-gray-50 px-3 py-2 text-sm text-gray-600">
+              Route: <span className="font-semibold">{routeLabel}</span>
+            </div>
+          )}
+
+          {/* Segmented toggle — only when route data is available */}
+          {route && (
+            <div className="flex rounded-xl border border-gray-200 bg-gray-50 p-0.5">
+              <button
+                type="button"
+                onClick={() => { setCorrectionMode('flag'); setFormError(''); }}
+                className={`flex-1 rounded-[10px] px-3 py-2 text-sm transition-colors ${
+                  correctionMode === 'flag'
+                    ? 'bg-white shadow-sm font-semibold text-gray-900'
+                    : 'font-medium text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Flag an issue
+              </button>
+              <button
+                type="button"
+                onClick={() => { setCorrectionMode('edit'); setFormError(''); }}
+                className={`flex-1 rounded-[10px] px-3 py-2 text-sm transition-colors ${
+                  correctionMode === 'edit'
+                    ? 'bg-white shadow-sm font-semibold text-gray-900'
+                    : 'font-medium text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Edit this route
+              </button>
+            </div>
+          )}
+
+          {/* ── Mode A: Flag an issue ── */}
+          {(!route || correctionMode === 'flag') && (
+            <div className="space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                What&apos;s the issue? *
+              </p>
+              <div className="space-y-2.5">
+                {FLAG_OPTIONS.map((opt) => (
+                  <label key={opt.id} className="flex items-center gap-3 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={flagged.has(opt.id)}
+                      onChange={(e) => {
+                        const next = new Set(flagged);
+                        if (e.target.checked) next.add(opt.id); else next.delete(opt.id);
+                        setFlagged(next);
+                        setFormError('');
+                      }}
+                      className="h-4 w-4 rounded border-gray-300 text-owa-green focus:ring-owa-green"
+                    />
+                    <span className="text-sm text-gray-700">{opt.label}</span>
+                  </label>
+                ))}
+              </div>
+              <div>
+                <label htmlFor="flag-notes" className="block text-sm font-medium text-gray-700 mb-1">
+                  Anything else to add?{' '}
+                  <span className="text-gray-400 font-normal">(optional)</span>
+                </label>
+                <textarea
+                  id="flag-notes"
+                  rows={3}
+                  value={flagNotes}
+                  onChange={(e) => setFlagNotes(e.target.value)}
+                  placeholder="e.g. The fare is now ₦500, not ₦300."
+                  className={`${inputCls} resize-none`}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* ── Mode B: Edit this route ── */}
+          {route && correctionMode === 'edit' && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                  Route legs
+                </p>
+                <button
+                  type="button"
+                  onClick={resetEditLegs}
+                  className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-700 transition-colors"
+                >
+                  <RotateCcw size={11} />
+                  Reset to original
+                </button>
+              </div>
+
+              {editLegs.map((leg, index) => (
+                <EditLegCard
+                  key={leg.leg_id}
+                  leg={leg}
+                  index={index}
+                  canRemove={editLegs.length > 1}
+                  onChange={(patch) => updateEditLeg(leg.leg_id, patch)}
+                  onRemove={() => removeEditLeg(leg.leg_id)}
+                />
+              ))}
+
+              <div>
+                <label htmlFor="change-notes" className="block text-sm font-medium text-gray-700 mb-1">
+                  What changed and why?{' '}
+                  <span className="text-gray-400 font-normal">(optional)</span>
+                </label>
+                <textarea
+                  id="change-notes"
+                  rows={2}
+                  value={changeNotes}
+                  onChange={(e) => setChangeNotes(e.target.value)}
+                  placeholder="e.g. Fare went up last week. Boarding point moved to the new terminal."
+                  className={`${inputCls} resize-none`}
+                />
+              </div>
+            </div>
+          )}
+        </>
       )}
 
-      {/* ── Email contact (both types) ── */}
+      {/* ── NEW ROUTE ── */}
+      {type === 'new_route' && (
+        <>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label htmlFor="origin" className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+                Origin *
+              </label>
+              <input
+                id="origin"
+                type="text"
+                list="owa-stops"
+                required
+                value={origin}
+                onChange={(e) => setOrigin(e.target.value)}
+                placeholder="e.g. Ojuelegba"
+                className={inputCls}
+              />
+            </div>
+            <div>
+              <label htmlFor="destination" className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+                Destination *
+              </label>
+              <input
+                id="destination"
+                type="text"
+                list="owa-stops"
+                required
+                value={destination}
+                onChange={(e) => setDestination(e.target.value)}
+                placeholder="e.g. Ketu Garage"
+                className={inputCls}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+              Route legs *
+            </p>
+            {legs.map((leg, index) => (
+              <LegCard
+                key={leg.id}
+                leg={leg}
+                index={index}
+                canRemove={legs.length > 1}
+                error={legErrors[leg.id]}
+                onChange={(patch) => updateLeg(leg.id, patch)}
+                onRemove={() => removeLeg(leg.id)}
+              />
+            ))}
+            <button
+              type="button"
+              onClick={addLeg}
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed
+                border-gray-300 py-2.5 text-sm font-medium text-gray-500 hover:border-owa-green
+                hover:text-owa-green transition-colors"
+            >
+              <Plus size={15} />
+              Add leg
+            </button>
+          </div>
+        </>
+      )}
+
+      {/* Form-level error */}
+      {formError && (
+        <p role="alert" className="text-sm text-red-600 font-medium">{formError}</p>
+      )}
+
+      {/* ── Email (both types) ── */}
       <div>
         <label htmlFor="contact" className="block text-sm font-medium text-gray-700 mb-1">
           Email{' '}
@@ -320,7 +500,7 @@ const inputCls =
   'w-full rounded-lg border border-gray-300 px-3 py-2 text-sm ' +
   'focus:border-owa-green focus:outline-none focus:ring-1 focus:ring-owa-green';
 
-// ── LegCard sub-component ──────────────────────────────────────────────────────
+// ── LegCard (new_route) ────────────────────────────────────────────────────────
 
 interface LegCardProps {
   leg: Leg;
@@ -336,8 +516,6 @@ function LegCard({ leg, index, canRemove, error, onChange, onRemove }: LegCardPr
 
   return (
     <div className={`rounded-xl border bg-white p-4 space-y-3 transition-colors ${error ? 'border-red-300' : 'border-gray-200'}`}>
-
-      {/* Header */}
       <div className="flex items-center justify-between">
         <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
           Leg {index + 1}
@@ -346,17 +524,14 @@ function LegCard({ leg, index, canRemove, error, onChange, onRemove }: LegCardPr
           <button
             type="button"
             onClick={onRemove}
-            className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-gray-400
-              hover:bg-red-50 hover:text-red-500 transition-colors"
+            className="ml-8 text-xs font-medium text-red-500 hover:text-red-600 transition-colors"
             aria-label={`Remove leg ${index + 1}`}
           >
-            <Trash2 size={12} />
             Remove
           </button>
         )}
       </div>
 
-      {/* Boarding point */}
       <div>
         <label className="block text-xs font-medium text-gray-600 mb-1">Board at *</label>
         <input
@@ -369,7 +544,6 @@ function LegCard({ leg, index, canRemove, error, onChange, onRemove }: LegCardPr
         />
       </div>
 
-      {/* Vehicle + Fare row */}
       <div className="grid grid-cols-3 gap-2">
         <div className="col-span-1">
           <label className="block text-xs font-medium text-gray-600 mb-1">Vehicle *</label>
@@ -378,12 +552,9 @@ function LegCard({ leg, index, canRemove, error, onChange, onRemove }: LegCardPr
             onChange={(e) => onChange({ vehicle_type: e.target.value as VehicleOption })}
             className={inputCls}
           >
-            {VEHICLE_OPTIONS.map((v) => (
-              <option key={v} value={v}>{v}</option>
-            ))}
+            {VEHICLE_OPTIONS.map((v) => <option key={v} value={v}>{v}</option>)}
           </select>
         </div>
-
         <div className="col-span-1">
           <label className="block text-xs font-medium text-gray-600 mb-1">
             Fare min (₦) {isWalk ? '' : '*'}
@@ -398,7 +569,6 @@ function LegCard({ leg, index, canRemove, error, onChange, onRemove }: LegCardPr
             className={`${inputCls} ${isWalk ? 'bg-gray-50 text-gray-400' : ''}`}
           />
         </div>
-
         <div className="col-span-1">
           <label className="block text-xs font-medium text-gray-600 mb-1">
             Fare max (₦) {isWalk ? '' : '*'}
@@ -415,7 +585,6 @@ function LegCard({ leg, index, canRemove, error, onChange, onRemove }: LegCardPr
         </div>
       </div>
 
-      {/* Drop-off point */}
       <div>
         <label className="block text-xs font-medium text-gray-600 mb-1">Drop at *</label>
         <input
@@ -428,10 +597,133 @@ function LegCard({ leg, index, canRemove, error, onChange, onRemove }: LegCardPr
         />
       </div>
 
-      {/* Per-leg validation error */}
-      {error && (
-        <p className="text-xs text-red-600 font-medium">{error}</p>
-      )}
+      {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
+    </div>
+  );
+}
+
+// ── EditLegCard (correction / edit route) ──────────────────────────────────────
+
+interface EditLegCardProps {
+  leg: EditLeg;
+  index: number;
+  canRemove: boolean;
+  onChange: (patch: Partial<EditLeg>) => void;
+  onRemove: () => void;
+}
+
+function EditLegCard({ leg, index, canRemove, onChange, onRemove }: EditLegCardProps) {
+  const isWalk = leg.vehicle === 'Walk';
+
+  return (
+    <div className="rounded-xl border border-gray-200 bg-white p-4 space-y-3">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
+          Leg {index + 1}
+        </span>
+        {canRemove && (
+          <button
+            type="button"
+            onClick={onRemove}
+            className="ml-8 text-xs font-medium text-red-500 hover:text-red-600 transition-colors"
+            aria-label={`Remove leg ${index + 1}`}
+          >
+            Remove
+          </button>
+        )}
+      </div>
+
+      <div>
+        <label className="block text-xs font-medium text-gray-600 mb-1">Board at</label>
+        <input
+          type="text"
+          value={leg.board_landmark}
+          onChange={(e) => onChange({ board_landmark: e.target.value })}
+          placeholder="e.g. Ojuelegba Under-Bridge"
+          className={inputCls}
+        />
+      </div>
+
+      <div>
+        <label className="block text-xs font-medium text-gray-600 mb-1">Board instruction</label>
+        <textarea
+          rows={2}
+          value={leg.board_instruction}
+          onChange={(e) => onChange({ board_instruction: e.target.value })}
+          placeholder="e.g. Board any yellow danfo heading to CMS."
+          className={`${inputCls} resize-none`}
+        />
+      </div>
+
+      <div className="grid grid-cols-3 gap-2">
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Vehicle</label>
+          <select
+            value={leg.vehicle}
+            onChange={(e) => onChange({ vehicle: e.target.value })}
+            className={inputCls}
+          >
+            {VEHICLE_OPTIONS.map((v) => <option key={v} value={v}>{v}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Fare min (₦)</label>
+          <input
+            type="number"
+            min={0}
+            value={leg.fare_min}
+            onChange={(e) => onChange({ fare_min: e.target.value })}
+            placeholder="0"
+            disabled={isWalk}
+            className={`${inputCls} ${isWalk ? 'bg-gray-50 text-gray-400' : ''}`}
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Fare max (₦)</label>
+          <input
+            type="number"
+            min={0}
+            value={leg.fare_max}
+            onChange={(e) => onChange({ fare_max: e.target.value })}
+            placeholder="0"
+            disabled={isWalk}
+            className={`${inputCls} ${isWalk ? 'bg-gray-50 text-gray-400' : ''}`}
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-xs font-medium text-gray-600 mb-1">Drop at</label>
+        <input
+          type="text"
+          value={leg.alight_landmark}
+          onChange={(e) => onChange({ alight_landmark: e.target.value })}
+          placeholder="e.g. CMS Bus Stop"
+          className={inputCls}
+        />
+      </div>
+
+      <div>
+        <label className="block text-xs font-medium text-gray-600 mb-1">Alight instruction</label>
+        <textarea
+          rows={2}
+          value={leg.alight_instruction}
+          onChange={(e) => onChange({ alight_instruction: e.target.value })}
+          placeholder="e.g. Drop when you see the overhead bridge."
+          className={`${inputCls} resize-none`}
+        />
+      </div>
+
+      <div>
+        <label className="block text-xs font-medium text-gray-600 mb-1">Leg notes (optional)</label>
+        <input
+          type="text"
+          value={leg.notes}
+          onChange={(e) => onChange({ notes: e.target.value })}
+          placeholder="e.g. Avoid rush hours"
+          className={inputCls}
+        />
+      </div>
     </div>
   );
 }

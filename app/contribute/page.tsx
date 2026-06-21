@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { ContributeForm } from '@/components/contribute/ContributeForm';
 import locationsData from '@/data/locations.json';
+import { findRouteById } from '@/lib/routes';
+import type { Route } from '@/types/route';
 
 export const metadata: Metadata = {
   title: 'Contribute a Route',
@@ -31,6 +33,11 @@ export default function ContributePage({ searchParams }: ContributePageProps) {
       ? `/?from=${encodeURIComponent(searchParams.from)}&to=${encodeURIComponent(searchParams.to)}`
       : '/';
 
+  const correctionRoute: Route | null =
+    isCorrection && searchParams.route_id
+      ? findRouteById(searchParams.route_id)
+      : null;
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
       <div className="mb-6">
@@ -58,6 +65,7 @@ export default function ContributePage({ searchParams }: ContributePageProps) {
           prefillOrigin={searchParams.origin}
           prefillDestination={searchParams.destination}
           stopNames={stopNames}
+          route={correctionRoute}
         />
       </div>
 
