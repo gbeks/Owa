@@ -7,7 +7,7 @@ const typeLabel: Record<Location['type'], string> = {
   bus_stop: 'Bus stop',
   terminal: 'Terminal',
   landmark: 'Landmark',
-  area: 'Area',
+  area:     'Area',
 };
 
 interface SearchSuggestionsProps {
@@ -23,22 +23,22 @@ export function SearchSuggestions({ suggestions, onSelect, id }: SearchSuggestio
     <ul
       id={id}
       role="listbox"
-      className="absolute left-0 right-0 top-full z-20 mt-1 max-h-64 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-lg"
+      className="absolute left-0 right-0 top-full z-20 mt-1 max-h-64 overflow-y-auto rounded-xl border border-white/[0.08] bg-owa-night3 shadow-2xl shadow-black/50"
     >
       {suggestions.map((loc) => (
         <li key={loc.location_id} role="option" aria-selected="false">
           <button
             type="button"
-            className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors"
+            className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-white/[0.05]"
             onMouseDown={(e) => {
               e.preventDefault();
               onSelect(loc);
             }}
           >
-            <MapPin size={15} className="shrink-0 text-owa-green" />
+            <MapPin size={14} className="shrink-0 text-owa-gold" />
             <div>
-              <p className="text-sm font-medium text-gray-900">{loc.canonical_name}</p>
-              <p className="text-xs text-gray-400">
+              <p className="text-sm font-medium text-owa-white">{loc.canonical_name}</p>
+              <p className="text-xs text-owa-mist">
                 {loc.area} · {typeLabel[loc.type]}
               </p>
             </div>

@@ -35,7 +35,6 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
   if (!from || !to) redirect('/');
 
   const routes = findAllRoutes(from, to);
-
   void logSearch(from, to, routes.length > 0);
 
   if (routes.length === 0) {
@@ -43,7 +42,7 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
       <div className="mx-auto max-w-2xl px-4 py-12">
         <EmptyState type="no-route" />
         <div className="mt-6 text-center">
-          <a href="/" className="text-sm font-semibold text-owa-green hover:underline">
+          <a href="/" className="text-sm font-semibold text-owa-gold transition-colors hover:text-owa-gold-bright">
             ← Search again
           </a>
         </div>
@@ -54,23 +53,23 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
   if (routes.length === 1) {
     const route = routes[0];
     return (
-      <div className="mx-auto max-w-2xl px-4 py-6 space-y-4">
+      <div className="mx-auto max-w-2xl space-y-4 px-4 py-6">
         <div className="flex items-center justify-between">
-          <a href="/" className="text-sm text-gray-400 hover:text-owa-green transition-colors">
+          <a href="/" className="text-sm text-owa-mist transition-colors hover:text-owa-gold">
             ← New search
           </a>
         </div>
         <PeakHourBanner />
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-owa-mist/60">
           {route.legs.length} {route.legs.length === 1 ? 'leg' : 'legs'} ·{' '}
           {route.confidence === 'high' ? 'Verified route' : 'Route data may be approximate'}
         </p>
         <a
           href={`/directions/${route.route_id}`}
-          className="block rounded-2xl border-2 border-transparent hover:border-owa-green transition-colors"
+          className="block rounded-2xl border-2 border-transparent transition-colors hover:border-owa-gold/40"
         >
           <RouteCard route={route} />
-          <p className="mt-2 text-center text-xs font-semibold text-owa-green">
+          <p className="mt-2 text-center text-xs font-semibold text-owa-gold/70">
             Tap to see step-by-step directions →
           </p>
         </a>
@@ -82,22 +81,22 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
   const destLabel = stripVia(routes[0].destination_label);
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-6 space-y-4">
+    <div className="mx-auto max-w-2xl space-y-4 px-4 py-6">
       <div className="flex items-center justify-between">
-        <a href="/" className="text-sm text-gray-400 hover:text-owa-green transition-colors">
+        <a href="/" className="text-sm text-owa-mist transition-colors hover:text-owa-gold">
           ← New search
         </a>
       </div>
       <PeakHourBanner />
       <div>
-        <h1 className="text-lg font-black text-gray-900 leading-tight">
-          <span className="text-owa-green">{originLabel}</span>
-          <span className="mx-2 inline-flex items-center text-gray-300">
+        <h1 className="text-lg font-black leading-tight text-owa-white">
+          <span className="text-owa-gold">{originLabel}</span>
+          <span className="mx-2 inline-flex items-center text-owa-mist/40">
             <ArrowRight size={18} />
           </span>
           <span>{destLabel}</span>
         </h1>
-        <p className="mt-1 text-xs text-gray-400">
+        <p className="mt-1 text-xs text-owa-mist">
           {routes.length} route options — tap one to see directions
         </p>
       </div>

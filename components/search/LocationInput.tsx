@@ -43,23 +43,26 @@ export function LocationInput({ id, label, placeholder, value, onChange }: Locat
 
   return (
     <div className="relative">
-      <label htmlFor={id} className="mb-1 block text-xs font-semibold uppercase tracking-wide text-gray-500">
+      <label
+        htmlFor={id}
+        className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-owa-mist"
+      >
         {label}
       </label>
       <div className="relative flex items-center">
         {value ? (
           <div
-            className="flex w-full cursor-text items-center justify-between rounded-xl border-2 border-owa-green bg-green-50 px-4 py-3"
+            className="flex w-full cursor-text items-center justify-between rounded-xl border-2 border-owa-gold/40 bg-owa-gold/10 px-4 py-3"
             onClick={handleClickValue}
           >
-            <span className="text-sm font-semibold text-gray-900">{value.canonical_name}</span>
+            <span className="text-sm font-semibold text-owa-white">{value.canonical_name}</span>
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); handleClear(); }}
-              className="ml-2 rounded-full p-0.5 text-gray-400 hover:bg-green-200 hover:text-gray-700"
+              className="ml-2 rounded-full p-0.5 text-owa-mist transition-colors hover:bg-owa-gold/20 hover:text-owa-white"
               aria-label={`Clear ${label}`}
             >
-              <X size={16} />
+              <X size={15} />
             </button>
           </div>
         ) : (
@@ -71,8 +74,9 @@ export function LocationInput({ id, label, placeholder, value, onChange }: Locat
               autoComplete="off"
               placeholder={placeholder}
               value={inputText}
-              className="w-full rounded-xl border-2 border-gray-200 bg-white px-4 py-3 pr-10 text-sm
-                placeholder-gray-400 focus:border-owa-green focus:outline-none transition-colors"
+              className="w-full rounded-xl border-2 border-white/[0.08] bg-owa-night3 px-4 py-3 pr-10 text-sm
+                text-owa-white placeholder-owa-mist/50 transition-colors
+                focus:border-owa-gold/50 focus:outline-none"
               onChange={(e) => {
                 setInputText(e.target.value);
                 setIsOpen(true);

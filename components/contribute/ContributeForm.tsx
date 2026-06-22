@@ -95,6 +95,13 @@ interface ContributeFormProps {
   route?: ResolvedRoute | null;
 }
 
+// ── Shared input class ─────────────────────────────────────────────────────────
+
+const inputCls =
+  'w-full rounded-xl border border-white/[0.08] bg-owa-night3 px-3 py-2.5 text-sm ' +
+  'text-owa-white placeholder-owa-mist/40 ' +
+  'focus:border-owa-gold/50 focus:outline-none focus:ring-1 focus:ring-owa-gold/30';
+
 // ── Main component ─────────────────────────────────────────────────────────────
 
 export function ContributeForm({
@@ -115,6 +122,7 @@ export function ContributeForm({
   // new_route
   const [origin, setOrigin] = useState(prefillOrigin ?? '');
   const [destination, setDestination] = useState(prefillDestination ?? '');
+
   const counterRef = useRef(0);
   function nextId() { return `leg-${++counterRef.current}`; }
   const [legs, setLegs] = useState<Leg[]>(() => [blankLeg(nextId())]);
@@ -208,7 +216,6 @@ export function ContributeForm({
         const issueStr = issueLabels.length ? issueLabels.join(', ') : 'Other';
         description = `[FLAG]\nIssues: ${issueStr}${flagNotes.trim() ? `\nNotes: ${flagNotes.trim()}` : ''}`;
       } else {
-        // edit mode — serialize proposed route as JSON
         description =
           `[ROUTE EDIT - PENDING REVIEW]\n` +
           JSON.stringify({
@@ -243,13 +250,13 @@ export function ContributeForm({
 
   if (submitStatus === 'success') {
     return (
-      <div className="py-8 text-center space-y-2">
-        <p className="text-3xl">✓</p>
-        <p className="font-semibold text-gray-900">Submitted — thank you.</p>
-        <p className="text-sm text-gray-500">
+      <div className="space-y-2 py-8 text-center">
+        <p className="text-3xl text-owa-gold">✓</p>
+        <p className="font-semibold text-owa-white">Submitted — thank you.</p>
+        <p className="text-sm text-owa-mist">
           We&apos;ll review this and update the route if everything checks out.
         </p>
-        <a href="/" className="mt-4 inline-block text-sm font-semibold text-owa-green hover:underline">
+        <a href="/" className="mt-4 inline-block text-sm font-semibold text-owa-gold transition-colors hover:text-owa-gold-bright">
           Back to search
         </a>
       </div>
@@ -272,23 +279,21 @@ export function ContributeForm({
       {/* ── CORRECTION ── */}
       {type === 'correction' && (
         <>
-          {/* Route context card */}
           {routeLabel && (
-            <div className="rounded-lg bg-gray-50 px-3 py-2 text-sm text-gray-600">
-              Route: <span className="font-semibold">{routeLabel}</span>
+            <div className="rounded-xl border border-white/[0.06] bg-owa-night3 px-3 py-2.5 text-sm text-owa-mist">
+              Route: <span className="font-semibold text-owa-white">{routeLabel}</span>
             </div>
           )}
 
-          {/* Segmented toggle — only when route data is available */}
           {route && (
-            <div className="flex rounded-xl border border-gray-200 bg-gray-50 p-0.5">
+            <div className="flex rounded-xl border border-white/[0.08] bg-owa-night3 p-0.5">
               <button
                 type="button"
                 onClick={() => { setCorrectionMode('flag'); setFormError(''); }}
                 className={`flex-1 rounded-[10px] px-3 py-2 text-sm transition-colors ${
                   correctionMode === 'flag'
-                    ? 'bg-white shadow-sm font-semibold text-gray-900'
-                    : 'font-medium text-gray-500 hover:text-gray-700'
+                    ? 'bg-owa-night2 shadow-sm font-semibold text-owa-white'
+                    : 'font-medium text-owa-mist hover:text-owa-white'
                 }`}
               >
                 Flag an issue
@@ -298,8 +303,8 @@ export function ContributeForm({
                 onClick={() => { setCorrectionMode('edit'); setFormError(''); }}
                 className={`flex-1 rounded-[10px] px-3 py-2 text-sm transition-colors ${
                   correctionMode === 'edit'
-                    ? 'bg-white shadow-sm font-semibold text-gray-900'
-                    : 'font-medium text-gray-500 hover:text-gray-700'
+                    ? 'bg-owa-night2 shadow-sm font-semibold text-owa-white'
+                    : 'font-medium text-owa-mist hover:text-owa-white'
                 }`}
               >
                 Edit this route
@@ -310,12 +315,12 @@ export function ContributeForm({
           {/* ── Mode A: Flag an issue ── */}
           {(!route || correctionMode === 'flag') && (
             <div className="space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+              <p className="text-xs font-semibold uppercase tracking-wide text-owa-mist">
                 What&apos;s the issue? *
               </p>
               <div className="space-y-2.5">
                 {FLAG_OPTIONS.map((opt) => (
-                  <label key={opt.id} className="flex items-center gap-3 cursor-pointer select-none">
+                  <label key={opt.id} className="flex cursor-pointer select-none items-center gap-3">
                     <input
                       type="checkbox"
                       checked={flagged.has(opt.id)}
@@ -325,16 +330,16 @@ export function ContributeForm({
                         setFlagged(next);
                         setFormError('');
                       }}
-                      className="h-4 w-4 rounded border-gray-300 text-owa-green focus:ring-owa-green"
+                      className="h-4 w-4 rounded border-white/[0.12] bg-owa-night2 text-owa-gold focus:ring-owa-gold/30"
                     />
-                    <span className="text-sm text-gray-700">{opt.label}</span>
+                    <span className="text-sm text-owa-white">{opt.label}</span>
                   </label>
                 ))}
               </div>
               <div>
-                <label htmlFor="flag-notes" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="flag-notes" className="mb-1 block text-sm font-medium text-owa-mist">
                   Anything else to add?{' '}
-                  <span className="text-gray-400 font-normal">(optional)</span>
+                  <span className="font-normal text-owa-mist/50">(optional)</span>
                 </label>
                 <textarea
                   id="flag-notes"
@@ -352,13 +357,13 @@ export function ContributeForm({
           {route && correctionMode === 'edit' && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                <p className="text-xs font-semibold uppercase tracking-wide text-owa-mist">
                   Route legs
                 </p>
                 <button
                   type="button"
                   onClick={resetEditLegs}
-                  className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-700 transition-colors"
+                  className="flex items-center gap-1 text-xs text-owa-mist/50 transition-colors hover:text-owa-white"
                 >
                   <RotateCcw size={11} />
                   Reset to original
@@ -377,9 +382,9 @@ export function ContributeForm({
               ))}
 
               <div>
-                <label htmlFor="change-notes" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="change-notes" className="mb-1 block text-sm font-medium text-owa-mist">
                   What changed and why?{' '}
-                  <span className="text-gray-400 font-normal">(optional)</span>
+                  <span className="font-normal text-owa-mist/50">(optional)</span>
                 </label>
                 <textarea
                   id="change-notes"
@@ -400,7 +405,7 @@ export function ContributeForm({
         <>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="origin" className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+              <label htmlFor="origin" className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-owa-mist">
                 Origin *
               </label>
               <input
@@ -415,7 +420,7 @@ export function ContributeForm({
               />
             </div>
             <div>
-              <label htmlFor="destination" className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+              <label htmlFor="destination" className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-owa-mist">
                 Destination *
               </label>
               <input
@@ -432,7 +437,7 @@ export function ContributeForm({
           </div>
 
           <div className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-owa-mist">
               Route legs *
             </p>
             {legs.map((leg, index) => (
@@ -450,26 +455,24 @@ export function ContributeForm({
               type="button"
               onClick={addLeg}
               className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed
-                border-gray-300 py-2.5 text-sm font-medium text-gray-500 hover:border-owa-green
-                hover:text-owa-green transition-colors"
+                border-white/[0.12] py-2.5 text-sm font-medium text-owa-mist transition-colors
+                hover:border-owa-gold/30 hover:text-owa-gold"
             >
-              <Plus size={15} />
+              <Plus size={14} />
               Add leg
             </button>
           </div>
         </>
       )}
 
-      {/* Form-level error */}
       {formError && (
-        <p role="alert" className="text-sm text-red-600 font-medium">{formError}</p>
+        <p role="alert" className="text-sm font-medium text-red-400">{formError}</p>
       )}
 
-      {/* ── Email (both types) ── */}
       <div>
-        <label htmlFor="contact" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="contact" className="mb-1.5 block text-sm font-medium text-owa-mist">
           Email{' '}
-          <span className="text-gray-400 font-normal">(optional)</span>
+          <span className="font-normal text-owa-mist/50">(optional)</span>
         </label>
         <input
           id="contact"
@@ -482,7 +485,7 @@ export function ContributeForm({
       </div>
 
       {submitStatus === 'error' && (
-        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 border border-red-200">
+        <p className="rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2.5 text-sm text-red-400">
           {errorMsg}
         </p>
       )}
@@ -493,12 +496,6 @@ export function ContributeForm({
     </form>
   );
 }
-
-// ── Shared input class ─────────────────────────────────────────────────────────
-
-const inputCls =
-  'w-full rounded-lg border border-gray-300 px-3 py-2 text-sm ' +
-  'focus:border-owa-green focus:outline-none focus:ring-1 focus:ring-owa-green';
 
 // ── LegCard (new_route) ────────────────────────────────────────────────────────
 
@@ -513,27 +510,32 @@ interface LegCardProps {
 
 function LegCard({ leg, index, canRemove, error, onChange, onRemove }: LegCardProps) {
   const isWalk = leg.vehicle_type === 'Walk';
+  const inputCls =
+    'w-full rounded-xl border border-white/[0.08] bg-owa-night2 px-3 py-2 text-sm ' +
+    'text-owa-white placeholder-owa-mist/40 ' +
+    'focus:border-owa-gold/50 focus:outline-none focus:ring-1 focus:ring-owa-gold/30';
 
   return (
-    <div className={`rounded-xl border bg-white p-4 space-y-3 transition-colors ${error ? 'border-red-300' : 'border-gray-200'}`}>
+    <div className={`space-y-3 rounded-xl border bg-owa-night3 p-4 transition-colors ${error ? 'border-red-500/30' : 'border-white/[0.06]'}`}>
       <div className="flex items-center justify-between">
-        <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-owa-mist">
           Leg {index + 1}
         </span>
         {canRemove && (
           <button
             type="button"
             onClick={onRemove}
-            className="ml-8 text-xs font-medium text-red-500 hover:text-red-600 transition-colors"
+            className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs text-owa-mist/50 transition-colors hover:bg-red-500/10 hover:text-red-400"
             aria-label={`Remove leg ${index + 1}`}
           >
+            <Trash2 size={11} />
             Remove
           </button>
         )}
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Board at *</label>
+        <label className="mb-1.5 block text-[10px] font-medium uppercase tracking-widest text-owa-mist">Board at *</label>
         <input
           type="text"
           required
@@ -546,7 +548,7 @@ function LegCard({ leg, index, canRemove, error, onChange, onRemove }: LegCardPr
 
       <div className="grid grid-cols-3 gap-2">
         <div className="col-span-1">
-          <label className="block text-xs font-medium text-gray-600 mb-1">Vehicle *</label>
+          <label className="mb-1.5 block text-[10px] font-medium uppercase tracking-widest text-owa-mist">Vehicle *</label>
           <select
             value={leg.vehicle_type}
             onChange={(e) => onChange({ vehicle_type: e.target.value as VehicleOption })}
@@ -556,8 +558,8 @@ function LegCard({ leg, index, canRemove, error, onChange, onRemove }: LegCardPr
           </select>
         </div>
         <div className="col-span-1">
-          <label className="block text-xs font-medium text-gray-600 mb-1">
-            Fare min (₦) {isWalk ? '' : '*'}
+          <label className="mb-1.5 block text-[10px] font-medium uppercase tracking-widest text-owa-mist">
+            Min (₦) {isWalk ? '' : '*'}
           </label>
           <input
             type="number"
@@ -566,12 +568,12 @@ function LegCard({ leg, index, canRemove, error, onChange, onRemove }: LegCardPr
             onChange={(e) => onChange({ fare_min: e.target.value })}
             placeholder="0"
             disabled={isWalk}
-            className={`${inputCls} ${isWalk ? 'bg-gray-50 text-gray-400' : ''}`}
+            className={`${inputCls} ${isWalk ? 'cursor-not-allowed opacity-30' : ''}`}
           />
         </div>
         <div className="col-span-1">
-          <label className="block text-xs font-medium text-gray-600 mb-1">
-            Fare max (₦) {isWalk ? '' : '*'}
+          <label className="mb-1.5 block text-[10px] font-medium uppercase tracking-widest text-owa-mist">
+            Max (₦) {isWalk ? '' : '*'}
           </label>
           <input
             type="number"
@@ -580,13 +582,13 @@ function LegCard({ leg, index, canRemove, error, onChange, onRemove }: LegCardPr
             onChange={(e) => onChange({ fare_max: e.target.value })}
             placeholder="0"
             disabled={isWalk}
-            className={`${inputCls} ${isWalk ? 'bg-gray-50 text-gray-400' : ''}`}
+            className={`${inputCls} ${isWalk ? 'cursor-not-allowed opacity-30' : ''}`}
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Drop at *</label>
+        <label className="mb-1.5 block text-[10px] font-medium uppercase tracking-widest text-owa-mist">Drop at *</label>
         <input
           type="text"
           required
@@ -597,7 +599,9 @@ function LegCard({ leg, index, canRemove, error, onChange, onRemove }: LegCardPr
         />
       </div>
 
-      {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
+      {error && (
+        <p className="text-xs font-medium text-red-400">{error}</p>
+      )}
     </div>
   );
 }
@@ -616,25 +620,26 @@ function EditLegCard({ leg, index, canRemove, onChange, onRemove }: EditLegCardP
   const isWalk = leg.vehicle === 'Walk';
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4 space-y-3">
+    <div className="space-y-3 rounded-xl border border-white/[0.06] bg-owa-night3 p-4">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-owa-mist">
           Leg {index + 1}
         </span>
         {canRemove && (
           <button
             type="button"
             onClick={onRemove}
-            className="ml-8 text-xs font-medium text-red-500 hover:text-red-600 transition-colors"
+            className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs text-owa-mist/50 transition-colors hover:bg-red-500/10 hover:text-red-400"
             aria-label={`Remove leg ${index + 1}`}
           >
+            <Trash2 size={11} />
             Remove
           </button>
         )}
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Board at</label>
+        <label className="mb-1 block text-xs font-medium text-owa-mist">Board at</label>
         <input
           type="text"
           value={leg.board_landmark}
@@ -645,7 +650,7 @@ function EditLegCard({ leg, index, canRemove, onChange, onRemove }: EditLegCardP
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Board instruction</label>
+        <label className="mb-1 block text-xs font-medium text-owa-mist">Board instruction</label>
         <textarea
           rows={2}
           value={leg.board_instruction}
@@ -657,7 +662,7 @@ function EditLegCard({ leg, index, canRemove, onChange, onRemove }: EditLegCardP
 
       <div className="grid grid-cols-3 gap-2">
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Vehicle</label>
+          <label className="mb-1 block text-xs font-medium text-owa-mist">Vehicle</label>
           <select
             value={leg.vehicle}
             onChange={(e) => onChange({ vehicle: e.target.value })}
@@ -667,7 +672,7 @@ function EditLegCard({ leg, index, canRemove, onChange, onRemove }: EditLegCardP
           </select>
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Fare min (₦)</label>
+          <label className="mb-1 block text-xs font-medium text-owa-mist">Fare min (₦)</label>
           <input
             type="number"
             min={0}
@@ -675,11 +680,11 @@ function EditLegCard({ leg, index, canRemove, onChange, onRemove }: EditLegCardP
             onChange={(e) => onChange({ fare_min: e.target.value })}
             placeholder="0"
             disabled={isWalk}
-            className={`${inputCls} ${isWalk ? 'bg-gray-50 text-gray-400' : ''}`}
+            className={`${inputCls} ${isWalk ? 'cursor-not-allowed opacity-30' : ''}`}
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Fare max (₦)</label>
+          <label className="mb-1 block text-xs font-medium text-owa-mist">Fare max (₦)</label>
           <input
             type="number"
             min={0}
@@ -687,13 +692,13 @@ function EditLegCard({ leg, index, canRemove, onChange, onRemove }: EditLegCardP
             onChange={(e) => onChange({ fare_max: e.target.value })}
             placeholder="0"
             disabled={isWalk}
-            className={`${inputCls} ${isWalk ? 'bg-gray-50 text-gray-400' : ''}`}
+            className={`${inputCls} ${isWalk ? 'cursor-not-allowed opacity-30' : ''}`}
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Drop at</label>
+        <label className="mb-1 block text-xs font-medium text-owa-mist">Drop at</label>
         <input
           type="text"
           value={leg.alight_landmark}
@@ -704,7 +709,7 @@ function EditLegCard({ leg, index, canRemove, onChange, onRemove }: EditLegCardP
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Alight instruction</label>
+        <label className="mb-1 block text-xs font-medium text-owa-mist">Alight instruction</label>
         <textarea
           rows={2}
           value={leg.alight_instruction}
@@ -715,7 +720,7 @@ function EditLegCard({ leg, index, canRemove, onChange, onRemove }: EditLegCardP
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Leg notes (optional)</label>
+        <label className="mb-1 block text-xs font-medium text-owa-mist">Leg notes (optional)</label>
         <input
           type="text"
           value={leg.notes}

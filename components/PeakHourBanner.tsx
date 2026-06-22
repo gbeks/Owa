@@ -14,10 +14,10 @@ export function PeakHourBanner() {
   if (!isPeak) return null;
 
   return (
-    <div className="flex items-start gap-2.5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-      <Clock size={16} className="mt-0.5 shrink-0" />
-      <p>
-        <span className="font-semibold">Peak hours.</span>{' '}
+    <div className="flex items-start gap-2.5 rounded-r-xl border-l-2 border-owa-gold bg-owa-gold/[0.07] px-4 py-3 text-sm">
+      <Clock size={15} className="mt-0.5 shrink-0 text-owa-gold" />
+      <p className="text-owa-sand">
+        <span className="font-semibold text-owa-gold">Peak hours active.</span>{' '}
         Fares may be higher than shown.
       </p>
     </div>
