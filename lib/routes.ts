@@ -15,7 +15,10 @@ const segmentMap = new Map<string, Segment>(
 function resolveRoute(route: Route): ResolvedRoute {
   const legs: RouteLeg[] = route.segments.map((segId, index) => {
     const seg = segmentMap.get(segId);
-    if (!seg) throw new Error(`Unknown segment_id "${segId}" in route "${route.route_id}"`);
+    if (!seg) {
+      console.error(`[resolveRoute] Missing segment_id "${segId}" in route "${route.route_id}"`);
+      throw new Error(`Unknown segment_id "${segId}" in route "${route.route_id}"`);
+    }
     return {
       leg_id: seg.segment_id,
       step_number: index + 1,
@@ -52,6 +55,12 @@ export function listRoutes(): ResolvedRoute[] {
 export function findRoute(from: string, to: string): ResolvedRoute | null {
   const raw = routes.find((r) => r.origin_id === from && r.destination_id === to);
   return raw ? resolveRoute(raw) : null;
+}
+
+export function findAllRoutes(from: string, to: string): ResolvedRoute[] {
+  return routes
+    .filter((r) => r.origin_id === from && r.destination_id === to)
+    .map(resolveRoute);
 }
 
 export function findRouteById(routeId: string): ResolvedRoute | null {

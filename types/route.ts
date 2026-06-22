@@ -90,4 +90,5 @@ export interface Location {
   area: string;
   lga: string;
   type: 'bus_stop' | 'landmark' | 'area' | 'terminal';
+  children?: string[];
 }

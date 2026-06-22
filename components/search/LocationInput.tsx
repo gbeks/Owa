@@ -35,6 +35,12 @@ export function LocationInput({ id, label, placeholder, value, onChange }: Locat
     inputRef.current?.focus();
   }
 
+  function handleClickValue() {
+    onChange(null);
+    setInputText('');
+    setTimeout(() => inputRef.current?.focus(), 0);
+  }
+
   return (
     <div className="relative">
       <label htmlFor={id} className="mb-1 block text-xs font-semibold uppercase tracking-wide text-gray-500">
@@ -42,11 +48,14 @@ export function LocationInput({ id, label, placeholder, value, onChange }: Locat
       </label>
       <div className="relative flex items-center">
         {value ? (
-          <div className="flex w-full items-center justify-between rounded-xl border-2 border-owa-green bg-green-50 px-4 py-3">
+          <div
+            className="flex w-full cursor-text items-center justify-between rounded-xl border-2 border-owa-green bg-green-50 px-4 py-3"
+            onClick={handleClickValue}
+          >
             <span className="text-sm font-semibold text-gray-900">{value.canonical_name}</span>
             <button
               type="button"
-              onClick={handleClear}
+              onClick={(e) => { e.stopPropagation(); handleClear(); }}
               className="ml-2 rounded-full p-0.5 text-gray-400 hover:bg-green-200 hover:text-gray-700"
               aria-label={`Clear ${label}`}
             >

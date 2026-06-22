@@ -9,13 +9,16 @@ import { LocationInput } from './LocationInput';
 import { Button } from '@/components/ui/Button';
 import { DirectionsStep } from '@/components/route/DirectionsStep';
 import { FareRange } from '@/components/route/FareRange';
+import { RouteVariantList } from '@/components/route/RouteVariantList';
+import { ExpandedDestinationList, type ExpandedItem } from '@/components/route/ExpandedDestinationList';
 import { useRecentSearches } from '@/hooks/useRecentSearches';
 import type { Location, ResolvedRoute } from '@/types/route';
 
 type SearchState =
   | { status: 'idle' }
   | { status: 'loading' }
-  | { status: 'found'; route: ResolvedRoute }
+  | { status: 'found'; routes: ResolvedRoute[]; originLabel: string; destinationLabel: string }
+  | { status: 'found-expanded'; originLabel: string; parentLabel: string; items: ExpandedItem[] }
   | { status: 'not-found'; originLabel: string; destinationLabel: string }
   | { status: 'error'; message: string };
 
@@ -49,8 +52,12 @@ export function SearchSection({ popularRoutes, initialFrom, initialTo }: SearchS
         const data = await res.json();
         if (cancelled) return;
         if (res.ok) {
-          setSearch({ status: 'found', route: data.route });
-          setExpanded(true);
+          if (data.expanded) {
+            setSearch({ status: 'found-expanded', originLabel: initialFrom, parentLabel: data.parent_label, items: data.items });
+          } else {
+            setSearch({ status: 'found', routes: data.routes, originLabel: initialFrom, destinationLabel: initialTo });
+            setExpanded(true);
+          }
         } else {
           setSearch({ status: 'not-found', originLabel: initialFrom, destinationLabel: initialTo });
         }
@@ -76,7 +83,7 @@ export function SearchSection({ popularRoutes, initialFrom, initialTo }: SearchS
       });
     }
 
-    if (search.status === 'found' && summaryRef.current) {
+    if ((search.status === 'found' || search.status === 'found-expanded') && summaryRef.current) {
       scrollTo(summaryRef.current);
     } else if ((search.status === 'error' || search.status === 'not-found') && resultsRef.current) {
       scrollTo(resultsRef.current);
@@ -95,8 +102,12 @@ export function SearchSection({ popularRoutes, initialFrom, initialTo }: SearchS
       );
       const data = await res.json();
       if (res.ok) {
-        setSearch({ status: 'found', route: data.route });
-        setExpanded(true);
+        if (data.expanded) {
+          setSearch({ status: 'found-expanded', originLabel, parentLabel: data.parent_label, items: data.items });
+        } else {
+          setSearch({ status: 'found', routes: data.routes, originLabel, destinationLabel });
+          setExpanded(true);
+        }
         addRecent({ origin_id: from, destination_id: to, origin_label: originLabel, destination_label: destinationLabel });
         window.history.replaceState(null, '', `/?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
       } else {
@@ -297,75 +308,118 @@ export function SearchSection({ popularRoutes, initialFrom, initialTo }: SearchS
             </div>
           )}
 
-          {search.status === 'found' && (
-            <div className="space-y-3">
-              {/* Summary card */}
-              <div ref={summaryRef} className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-4 scroll-mt-3">
-                <div>
-                  <h2 className="text-lg font-black text-gray-900 leading-tight">
-                    <span className="text-owa-green">{search.route.origin_label}</span>
-                    <span className="mx-2 inline-flex items-center text-gray-300">
-                      <ArrowRight size={18} />
-                    </span>
-                    <span>{search.route.destination_label}</span>
-                  </h2>
-                  <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
-                    <span className="flex items-center gap-1">
-                      <Clock size={12} />
-                      ~{search.route.total_duration_estimate_mins} min
-                    </span>
-                    <span>
-                      {search.route.legs.length} {search.route.legs.length === 1 ? 'leg' : 'legs'}
-                    </span>
-                    <span className="hidden sm:inline capitalize">
-                      {search.route.legs.map((l) => l.vehicle).join(' → ')}
-                    </span>
+          {search.status === 'found' && search.routes.length === 1 && (() => {
+            const route = search.routes[0];
+            return (
+              <div className="space-y-3">
+                {/* Summary card */}
+                <div ref={summaryRef} className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-4 scroll-mt-3">
+                  <div>
+                    <h2 className="text-lg font-black text-gray-900 leading-tight">
+                      <span className="text-owa-green">{route.origin_label}</span>
+                      <span className="mx-2 inline-flex items-center text-gray-300">
+                        <ArrowRight size={18} />
+                      </span>
+                      <span>{route.destination_label}</span>
+                    </h2>
+                    <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
+                      <span className="flex items-center gap-1">
+                        <Clock size={12} />
+                        ~{route.total_duration_estimate_mins} min
+                      </span>
+                      <span>
+                        {route.legs.length} {route.legs.length === 1 ? 'leg' : 'legs'}
+                      </span>
+                      <span className="hidden sm:inline capitalize">
+                        {route.legs.map((l) => l.vehicle).join(' → ')}
+                      </span>
+                    </div>
                   </div>
-                </div>
 
-                <div className="flex items-center justify-between border-t border-gray-50 pt-3">
-                  <FareRange
-                    min={search.route.total_fare_min}
-                    max={search.route.total_fare_max}
-                    size="lg"
-                    label="Total est. fare"
-                  />
-                  <button
-                    onClick={() => setExpanded((e) => !e)}
-                    className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5
-                      text-sm font-semibold text-owa-green hover:bg-green-50 transition-colors"
-                  >
-                    {expanded ? (
-                      <><ChevronUp size={15} /> Hide</>
-                    ) : (
-                      <><ChevronDown size={15} /> Directions</>
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {/* Expandable step-by-step */}
-              {expanded && (
-                <>
-                  <div className="space-y-3">
-                    {search.route.legs.map((leg, i) => (
-                      <DirectionsStep
-                        key={leg.leg_id}
-                        leg={leg}
-                        isLast={i === search.route.legs.length - 1}
-                      />
-                    ))}
-                  </div>
-                  <div className="pb-4 text-center">
-                    <a
-                      href={`/contribute?type=correction&route_id=${search.route.route_id}&route_label=${encodeURIComponent(`${search.route.origin_label} → ${search.route.destination_label}`)}&from=${encodeURIComponent(search.route.origin_id)}&to=${encodeURIComponent(search.route.destination_id)}`}
-                      className="text-sm text-gray-400 hover:text-owa-green transition-colors underline underline-offset-2"
+                  <div className="flex items-center justify-between border-t border-gray-50 pt-3">
+                    <FareRange
+                      min={route.total_fare_min}
+                      max={route.total_fare_max}
+                      size="lg"
+                      label="Total est. fare"
+                    />
+                    <button
+                      onClick={() => setExpanded((e) => !e)}
+                      className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5
+                        text-sm font-semibold text-owa-green hover:bg-green-50 transition-colors"
                     >
-                      Something wrong? Report it.
-                    </a>
+                      {expanded ? (
+                        <><ChevronUp size={15} /> Hide</>
+                      ) : (
+                        <><ChevronDown size={15} /> Directions</>
+                      )}
+                    </button>
                   </div>
-                </>
-              )}
+                </div>
+
+                {/* Expandable step-by-step */}
+                {expanded && (
+                  <>
+                    <div className="space-y-3">
+                      {route.legs.map((leg, i) => (
+                        <DirectionsStep
+                          key={leg.leg_id}
+                          leg={leg}
+                          isLast={i === route.legs.length - 1}
+                        />
+                      ))}
+                    </div>
+                    <div className="pb-4 text-center">
+                      <a
+                        href={`/contribute?type=correction&route_id=${route.route_id}&route_label=${encodeURIComponent(`${route.origin_label} → ${route.destination_label}`)}&from=${encodeURIComponent(route.origin_id)}&to=${encodeURIComponent(route.destination_id)}`}
+                        className="text-sm text-gray-400 hover:text-owa-green transition-colors underline underline-offset-2"
+                      >
+                        Something wrong? Report it.
+                      </a>
+                    </div>
+                  </>
+                )}
+              </div>
+            );
+          })()}
+
+          {search.status === 'found' && search.routes.length > 1 && (
+            <div className="space-y-3">
+              <div ref={summaryRef} className="scroll-mt-3">
+                <h2 className="text-lg font-black text-gray-900 leading-tight">
+                  <span className="text-owa-green">{search.originLabel}</span>
+                  <span className="mx-2 inline-flex items-center text-gray-300">
+                    <ArrowRight size={18} />
+                  </span>
+                  <span>{search.destinationLabel}</span>
+                </h2>
+                <p className="mt-1 text-xs text-gray-400">
+                  {search.routes.length} route options — tap one to see directions
+                </p>
+              </div>
+              <RouteVariantList routes={search.routes} />
+            </div>
+          )}
+
+          {search.status === 'found-expanded' && (
+            <div className="space-y-3">
+              <div ref={summaryRef} className="scroll-mt-3">
+                <h2 className="text-lg font-black text-gray-900 leading-tight">
+                  <span className="text-owa-green">{search.originLabel}</span>
+                  <span className="mx-2 inline-flex items-center text-gray-300">
+                    <ArrowRight size={18} />
+                  </span>
+                  <span>{search.parentLabel}</span>
+                </h2>
+                <p className="mt-1 text-xs text-gray-400">
+                  {search.items.length} destinations — tap one to see directions
+                </p>
+              </div>
+              <ExpandedDestinationList
+                originLabel={search.originLabel}
+                parentLabel={search.parentLabel}
+                items={search.items}
+              />
             </div>
           )}
         </div>
