@@ -360,7 +360,7 @@
     "total_fare_max": 2200,
     "total_duration_estimate_mins": 70,
     "last_verified": "2026-06-21",
-    "confidence": "needs_verification",
+    "confidence": "low",
     "flagged": false
   },
   {

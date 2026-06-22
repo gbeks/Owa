@@ -12,7 +12,7 @@ interface ConfidenceBadgeProps {
 }
 
 export function ConfidenceBadge({ confidence, lastVerified }: ConfidenceBadgeProps) {
-  const { icon: Icon, color, label } = config[confidence];
+  const { icon: Icon, color, label } = config[confidence] ?? config.low;
 
   const date = new Date(lastVerified);
   const formatted = date.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
