@@ -26,10 +26,11 @@
   {
     "location_id": "ikeja",
     "canonical_name": "Ikeja",
-    "aliases": ["Ikaja", "Ikeja Along", "Ikeja bus stop", "Ikeja CBD", "Lagos State capital", "Ikeja City Mall area"],
+    "aliases": ["Ikeja"],
     "area": "Ikeja",
     "lga": "Ikeja LGA",
-    "type": "area"
+    "type": "area",
+    "children": ["ikeja-under-bridge", "ikeja-along", "computer-village"]
   },
   {
     "location_id": "oshodi",
@@ -105,8 +106,8 @@
   },
   {
     "location_id": "computer-village",
-    "canonical_name": "Computer Village (Ikeja)",
-    "aliases": ["Computer Village", "Ikeja Computer Village", "CV Ikeja", "Awolowo Way Ikeja", "Obafemi Awolowo Way"],
+    "canonical_name": "Computer Village",
+    "aliases": ["Computer Village", "Ikeja Computer Village", "CV Ikeja", "Awolowo Way Ikeja", "Obafemi Awolowo Way", "Computer Village Ikeja", "Otigba", "Ikeja market", "Ikeja"],
     "area": "Ikeja",
     "lga": "Ikeja LGA",
     "type": "landmark"
@@ -146,10 +147,11 @@
   {
     "location_id": "mushin",
     "canonical_name": "Mushin",
-    "aliases": ["Mushin market", "Mushin bus stop", "Idi-Oro Mushin", "Town Planning Way Mushin", "Mushin Lagos"],
+    "aliases": ["Mushin"],
     "area": "Mushin",
     "lga": "Mushin LGA",
-    "type": "bus_stop"
+    "type": "area",
+    "children": ["idi-araba", "luth"]
   },
   {
     "location_id": "palmgrove",
@@ -198,5 +200,61 @@
     "area": "Lagos Island",
     "lga": "Lagos Island LGA",
     "type": "terminal"
+  },
+  {
+    "location_id": "idi-araba",
+    "canonical_name": "Idi-Araba",
+    "aliases": ["Idi Araba", "LUTH area", "Mushin Idi-Araba", "Idi-Araba bus stop", "Mushin"],
+    "area": "Mushin",
+    "lga": "Mushin LGA",
+    "type": "bus_stop"
+  },
+  {
+    "location_id": "jakande-gate",
+    "canonical_name": "Jakande Gate",
+    "aliases": ["Jakande", "Jakande Lekki", "Jakande bus stop", "Jakande roundabout", "Lekki Jakande"],
+    "area": "Lekki",
+    "lga": "Eti-Osa LGA",
+    "type": "bus_stop"
+  },
+  {
+    "location_id": "ikeja-under-bridge",
+    "canonical_name": "Ikeja Under Bridge",
+    "aliases": ["Ikeja Under Bridge", "IUB", "Ikeja underbridge", "Oba Akran Ikeja", "Allen junction Ikeja", "Ikeja Under-Bridge", "LASUTH junction", "Computer Village bus stop", "Ikeja"],
+    "area": "Ikeja",
+    "lga": "Ikeja LGA",
+    "type": "bus_stop"
+  },
+  {
+    "location_id": "ikeja-along",
+    "canonical_name": "Ikeja Along",
+    "aliases": ["National", "Airport Road junction", "Cement bus stop", "Ikeja"],
+    "area": "Ikeja",
+    "lga": "Ikeja LGA",
+    "type": "bus_stop"
+  },
+  {
+    "location_id": "kayfarm",
+    "canonical_name": "KayFarm",
+    "aliases": ["KayFarm gate", "KayFarm bus stop", "Omole KayFarm", "KayFarm estate"],
+    "area": "Omole",
+    "lga": "Ikeja LGA",
+    "type": "bus_stop"
+  },
+  {
+    "location_id": "luth",
+    "canonical_name": "LUTH",
+    "aliases": ["LUTH", "Lagos University Teaching Hospital", "Idi-Araba", "Mushin"],
+    "area": "Mushin",
+    "lga": "Mushin LGA",
+    "type": "landmark"
+  },
+  {
+    "location_id": "unilag",
+    "canonical_name": "UNILAG",
+    "aliases": ["University of Lagos", "Unilag gate", "Akoka Unilag", "Unilag bus stop", "University Road Lagos"],
+    "area": "Yaba",
+    "lga": "Lagos Mainland LGA",
+    "type": "landmark"
   }
 ]
