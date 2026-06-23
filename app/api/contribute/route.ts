@@ -22,8 +22,9 @@ export async function POST(req: Request) {
   }
 
   // Validate description
-  if (!description || typeof description !== 'string' || description.trim().length < 10) {
-    const msg = `Description is too short (${description?.trim().length ?? 0} chars). Minimum 10 characters.`;
+  const descLen = typeof description === 'string' ? description.trim().length : 0;
+  if (!description || typeof description !== 'string' || descLen < 10) {
+    const msg = `Description is too short (${descLen} chars). Minimum 10 characters.`;
     console.warn('[/api/contribute]', msg);
     return NextResponse.json({ error: msg }, { status: 400 });
   }
