@@ -11,37 +11,40 @@ import type { ResolvedRoute } from '@/types/route';
 type VehicleOption = 'Danfo' | 'Korope' | 'Keke' | 'BRT' | 'Okada' | 'Ferry' | 'Walk';
 const VEHICLE_OPTIONS: VehicleOption[] = ['Danfo', 'Korope', 'Keke', 'BRT', 'Okada', 'Ferry', 'Walk'];
 
-// new_route legs
-interface Leg {
+interface Step {
   id: string;
   boarding_point: string;
   vehicle_type: VehicleOption;
   fare_min: string;
   fare_max: string;
   drop_off_point: string;
+  duration_mins: string;
+  notes: string;
 }
 
-function blankLeg(id: string): Leg {
-  return { id, boarding_point: '', vehicle_type: 'Danfo', fare_min: '', fare_max: '', drop_off_point: '' };
+function blankStep(id: string): Step {
+  return { id, boarding_point: '', vehicle_type: 'Danfo', fare_min: '', fare_max: '', drop_off_point: '', duration_mins: '', notes: '' };
 }
 
-function serializeLegs(legs: Leg[]): string {
-  return legs
-    .map((leg, i) => {
+function serializeSteps(steps: Step[]): string {
+  return steps
+    .map((step, i) => {
       const fare =
-        leg.vehicle_type === 'Walk'
+        step.vehicle_type === 'Walk'
           ? 'Free'
-          : `₦${leg.fare_min || '?'} – ₦${leg.fare_max || '?'}`;
-      return (
-        `[Leg ${i + 1} · ${leg.vehicle_type} · ${fare}]\n` +
-        `Board at: ${leg.boarding_point}\n` +
-        `Drop at:  ${leg.drop_off_point}`
-      );
+          : `₦${step.fare_min || '?'} – ₦${step.fare_max || '?'}`;
+      const lines = [
+        `[Step ${i + 1} · ${step.vehicle_type} · ${fare}]`,
+        `Board at: ${step.boarding_point}`,
+        `Drop at:  ${step.drop_off_point}`,
+      ];
+      if (step.duration_mins.trim()) lines.push(`Duration: ~${step.duration_mins} min`);
+      if (step.notes.trim()) lines.push(`Notes: ${step.notes.trim()}`);
+      return lines.join('\n');
     })
     .join('\n\n');
 }
 
-// correction edit legs
 interface EditLeg {
   leg_id: string;
   board_landmark: string;
@@ -124,9 +127,9 @@ export function ContributeForm({
   const [destination, setDestination] = useState(prefillDestination ?? '');
 
   const counterRef = useRef(0);
-  function nextId() { return `leg-${++counterRef.current}`; }
-  const [legs, setLegs] = useState<Leg[]>(() => [blankLeg(nextId())]);
-  const [legErrors, setLegErrors] = useState<Record<string, string>>({});
+  function nextId() { return `step-${++counterRef.current}`; }
+  const [steps, setSteps] = useState<Step[]>(() => [blankStep(nextId())]);
+  const [stepErrors, setStepErrors] = useState<Record<string, string>>({});
 
   // correction — flag mode
   const [correctionMode, setCorrectionMode] = useState<CorrectionMode>('edit');
@@ -138,14 +141,15 @@ export function ContributeForm({
     route?.legs.map(routeLegToEditLeg) ?? []
   );
   const [changeNotes, setChangeNotes] = useState('');
+  const [confirmReset, setConfirmReset] = useState(false);
 
-  // ── Leg helpers (new_route) ──────────────────────────────────────────────────
+  // ── Step helpers (new_route) ─────────────────────────────────────────────────
 
-  function updateLeg(id: string, patch: Partial<Leg>) {
-    setLegs((prev) =>
-      prev.map((l) => {
-        if (l.id !== id) return l;
-        const updated = { ...l, ...patch };
+  function updateStep(id: string, patch: Partial<Step>) {
+    setSteps((prev) =>
+      prev.map((s) => {
+        if (s.id !== id) return s;
+        const updated = { ...s, ...patch };
         if (patch.vehicle_type === 'Walk') {
           updated.fare_min = '0';
           updated.fare_max = '0';
@@ -153,25 +157,25 @@ export function ContributeForm({
         return updated;
       })
     );
-    setLegErrors((prev) => { const n = { ...prev }; delete n[id]; return n; });
+    setStepErrors((prev) => { const n = { ...prev }; delete n[id]; return n; });
   }
 
-  function addLeg() { setLegs((prev) => [...prev, blankLeg(nextId())]); }
-  function removeLeg(id: string) { setLegs((prev) => prev.filter((l) => l.id !== id)); }
+  function addStep() { setSteps((prev) => [...prev, blankStep(nextId())]); }
+  function removeStep(id: string) { setSteps((prev) => prev.filter((s) => s.id !== id)); }
 
-  function validateLegs(): boolean {
+  function validateSteps(): boolean {
     const errors: Record<string, string> = {};
-    legs.forEach((l) => {
-      if (!l.boarding_point.trim()) errors[l.id] = 'Boarding point is required.';
-      else if (!l.drop_off_point.trim()) errors[l.id] = 'Drop-off point is required.';
-      else if (l.vehicle_type !== 'Walk') {
-        const min = Number(l.fare_min);
-        const max = Number(l.fare_max);
-        if (l.fare_min === '' || l.fare_max === '') errors[l.id] = 'Enter fare range (use 0 if unknown).';
-        else if (min > max) errors[l.id] = 'Fare min must be ≤ fare max.';
+    steps.forEach((s) => {
+      if (!s.boarding_point.trim()) errors[s.id] = 'Boarding point is required.';
+      else if (!s.drop_off_point.trim()) errors[s.id] = 'Drop-off point is required.';
+      else if (s.vehicle_type !== 'Walk') {
+        const min = Number(s.fare_min);
+        const max = Number(s.fare_max);
+        if (s.fare_min === '' || s.fare_max === '') errors[s.id] = 'Enter fare range (use 0 if unknown).';
+        else if (min > max) errors[s.id] = 'Fare min must be ≤ fare max.';
       }
     });
-    setLegErrors(errors);
+    setStepErrors(errors);
     return Object.keys(errors).length === 0;
   }
 
@@ -188,6 +192,7 @@ export function ContributeForm({
   function resetEditLegs() {
     setEditLegs(route?.legs.map(routeLegToEditLeg) ?? []);
     setChangeNotes('');
+    setConfirmReset(false);
   }
 
   // ── Submit ───────────────────────────────────────────────────────────────────
@@ -200,10 +205,9 @@ export function ContributeForm({
     let description = '';
 
     if (type === 'new_route') {
-      if (!validateLegs()) return;
-      description = serializeLegs(legs);
+      if (!validateSteps()) return;
+      description = serializeSteps(steps);
     } else {
-      // correction
       const inFlagMode = !route || correctionMode === 'flag';
       if (inFlagMode) {
         if (flagged.size === 0 && !flagNotes.trim()) {
@@ -250,13 +254,18 @@ export function ContributeForm({
 
   if (submitStatus === 'success') {
     return (
-      <div className="space-y-2 py-8 text-center">
-        <p className="text-3xl text-owa-gold">✓</p>
-        <p className="font-semibold text-owa-white">Submitted — thank you.</p>
+      <div className="space-y-3 py-10 text-center">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-owa-gold/15">
+          <span className="text-2xl text-owa-gold">✓</span>
+        </div>
+        <p className="text-lg font-bold text-owa-white">Thanks!</p>
         <p className="text-sm text-owa-mist">
-          We&apos;ll review this and update the route if everything checks out.
+          We&apos;ll review and update this route soon.
         </p>
-        <a href="/" className="mt-4 inline-block text-sm font-semibold text-owa-gold transition-colors hover:text-owa-gold-bright">
+        <a
+          href="/"
+          className="mt-2 inline-block rounded-xl bg-owa-gold/15 px-5 py-2.5 text-sm font-semibold text-owa-gold transition-colors hover:bg-owa-gold/25"
+        >
           Back to search
         </a>
       </div>
@@ -268,249 +277,282 @@ export function ContributeForm({
   // ── Render ────────────────────────────────────────────────────────────────────
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <>
+      <form id="contribute-form" onSubmit={handleSubmit} className="space-y-5 pb-28">
 
-      {stopNames.length > 0 && (
-        <datalist id="owa-stops">
-          {stopNames.map((name) => <option key={name} value={name} />)}
-        </datalist>
-      )}
+        {stopNames.length > 0 && (
+          <datalist id="owa-stops">
+            {stopNames.map((name) => <option key={name} value={name} />)}
+          </datalist>
+        )}
 
-      {/* ── CORRECTION ── */}
-      {type === 'correction' && (
-        <>
-          {routeLabel && (
-            <div className="rounded-xl border border-white/[0.06] bg-owa-night3 px-3 py-2.5 text-sm text-owa-mist">
-              Route: <span className="font-semibold text-owa-white">{routeLabel}</span>
-            </div>
-          )}
-
-          {route && (
-            <div className="flex rounded-xl border border-white/[0.08] bg-owa-night3 p-0.5">
-              <button
-                type="button"
-                onClick={() => { setCorrectionMode('flag'); setFormError(''); }}
-                className={`flex-1 rounded-[10px] px-3 py-2 text-sm transition-colors ${
-                  correctionMode === 'flag'
-                    ? 'bg-owa-night2 shadow-sm font-semibold text-owa-white'
-                    : 'font-medium text-owa-mist hover:text-owa-white'
-                }`}
-              >
-                Flag an issue
-              </button>
-              <button
-                type="button"
-                onClick={() => { setCorrectionMode('edit'); setFormError(''); }}
-                className={`flex-1 rounded-[10px] px-3 py-2 text-sm transition-colors ${
-                  correctionMode === 'edit'
-                    ? 'bg-owa-night2 shadow-sm font-semibold text-owa-white'
-                    : 'font-medium text-owa-mist hover:text-owa-white'
-                }`}
-              >
-                Edit this route
-              </button>
-            </div>
-          )}
-
-          {/* ── Mode A: Flag an issue ── */}
-          {(!route || correctionMode === 'flag') && (
-            <div className="space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-owa-mist">
-                What&apos;s the issue? *
-              </p>
-              <div className="space-y-2.5">
-                {FLAG_OPTIONS.map((opt) => (
-                  <label key={opt.id} className="flex cursor-pointer select-none items-center gap-3">
-                    <input
-                      type="checkbox"
-                      checked={flagged.has(opt.id)}
-                      onChange={(e) => {
-                        const next = new Set(flagged);
-                        if (e.target.checked) next.add(opt.id); else next.delete(opt.id);
-                        setFlagged(next);
-                        setFormError('');
-                      }}
-                      className="h-4 w-4 rounded border-white/[0.12] bg-owa-night2 text-owa-gold focus:ring-owa-gold/30"
-                    />
-                    <span className="text-sm text-owa-white">{opt.label}</span>
-                  </label>
-                ))}
+        {/* ── CORRECTION ── */}
+        {type === 'correction' && (
+          <>
+            {routeLabel && (
+              <div className="rounded-xl border border-white/[0.06] bg-owa-night3 px-3 py-2.5 text-sm text-owa-mist">
+                Route: <span className="font-semibold text-owa-white">{routeLabel}</span>
               </div>
-              <div>
-                <label htmlFor="flag-notes" className="mb-1 block text-sm font-medium text-owa-mist">
-                  Anything else to add?{' '}
-                  <span className="font-normal text-owa-mist/50">(optional)</span>
-                </label>
-                <textarea
-                  id="flag-notes"
-                  rows={3}
-                  value={flagNotes}
-                  onChange={(e) => setFlagNotes(e.target.value)}
-                  placeholder="e.g. The fare is now ₦500, not ₦300."
-                  className={`${inputCls} resize-none`}
-                />
-              </div>
-            </div>
-          )}
+            )}
 
-          {/* ── Mode B: Edit this route ── */}
-          {route && correctionMode === 'edit' && (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <p className="text-xs font-semibold uppercase tracking-wide text-owa-mist">
-                  Route legs
-                </p>
+            {route && (
+              <div className="flex rounded-xl border border-white/[0.08] bg-owa-night3 p-0.5">
                 <button
                   type="button"
-                  onClick={resetEditLegs}
-                  className="flex items-center gap-1 text-xs text-owa-mist/50 transition-colors hover:text-owa-white"
+                  onClick={() => { setCorrectionMode('flag'); setFormError(''); }}
+                  className={`flex-1 rounded-[10px] px-3 py-2 text-sm transition-colors ${
+                    correctionMode === 'flag'
+                      ? 'bg-owa-night2 shadow-sm font-semibold text-owa-white'
+                      : 'font-medium text-owa-mist hover:text-owa-white'
+                  }`}
                 >
-                  <RotateCcw size={11} />
-                  Reset to original
+                  Flag an issue
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setCorrectionMode('edit'); setFormError(''); }}
+                  className={`flex-1 rounded-[10px] px-3 py-2 text-sm transition-colors ${
+                    correctionMode === 'edit'
+                      ? 'bg-owa-night2 shadow-sm font-semibold text-owa-white'
+                      : 'font-medium text-owa-mist hover:text-owa-white'
+                  }`}
+                >
+                  Edit this route
                 </button>
               </div>
+            )}
 
-              {editLegs.map((leg, index) => (
-                <EditLegCard
-                  key={leg.leg_id}
-                  leg={leg}
-                  index={index}
-                  canRemove={editLegs.length > 1}
-                  onChange={(patch) => updateEditLeg(leg.leg_id, patch)}
-                  onRemove={() => removeEditLeg(leg.leg_id)}
-                />
-              ))}
+            {/* ── Mode A: Flag an issue ── */}
+            {(!route || correctionMode === 'flag') && (
+              <div className="space-y-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-owa-mist">
+                  What&apos;s the issue? *
+                </p>
+                <div className="space-y-2.5">
+                  {FLAG_OPTIONS.map((opt) => (
+                    <label key={opt.id} className="flex cursor-pointer select-none items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={flagged.has(opt.id)}
+                        onChange={(e) => {
+                          const next = new Set(flagged);
+                          if (e.target.checked) next.add(opt.id); else next.delete(opt.id);
+                          setFlagged(next);
+                          setFormError('');
+                        }}
+                        className="h-4 w-4 rounded border-white/[0.12] bg-owa-night2 text-owa-gold focus:ring-owa-gold/30"
+                      />
+                      <span className="text-sm text-owa-white">{opt.label}</span>
+                    </label>
+                  ))}
+                </div>
+                <div>
+                  <label htmlFor="flag-notes" className="mb-1 block text-sm font-medium text-owa-mist">
+                    Anything else to add?{' '}
+                    <span className="font-normal text-owa-mist/50">(optional)</span>
+                  </label>
+                  <textarea
+                    id="flag-notes"
+                    rows={3}
+                    value={flagNotes}
+                    onChange={(e) => setFlagNotes(e.target.value)}
+                    placeholder="e.g. The fare is now ₦500, not ₦300."
+                    className={`${inputCls} resize-none`}
+                  />
+                </div>
+              </div>
+            )}
 
+            {/* ── Mode B: Edit this route ── */}
+            {route && correctionMode === 'edit' && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-owa-mist">
+                    Steps
+                  </p>
+                  {confirmReset ? (
+                    <div className="flex items-center gap-3 rounded-xl border border-amber-500/20 bg-amber-500/10 px-3 py-1.5">
+                      <span className="text-xs text-amber-300">Undo all changes?</span>
+                      <button
+                        type="button"
+                        onClick={() => setConfirmReset(false)}
+                        className="text-xs text-owa-mist transition-colors hover:text-owa-white"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={resetEditLegs}
+                        className="text-xs font-semibold text-amber-300 transition-colors hover:text-amber-200"
+                      >
+                        Continue
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setConfirmReset(true)}
+                      className="flex items-center gap-1 text-xs text-owa-mist/50 transition-colors hover:text-owa-white"
+                    >
+                      <RotateCcw size={11} />
+                      Reset to original
+                    </button>
+                  )}
+                </div>
+
+                {editLegs.map((leg, index) => (
+                  <EditLegCard
+                    key={leg.leg_id}
+                    leg={leg}
+                    index={index}
+                    canRemove={editLegs.length > 1}
+                    onChange={(patch) => updateEditLeg(leg.leg_id, patch)}
+                    onRemove={() => removeEditLeg(leg.leg_id)}
+                  />
+                ))}
+
+                <div>
+                  <label htmlFor="change-notes" className="mb-1 block text-sm font-medium text-owa-mist">
+                    Anything else we should know?{' '}
+                    <span className="font-normal text-owa-mist/50">(optional)</span>
+                  </label>
+                  <textarea
+                    id="change-notes"
+                    rows={2}
+                    value={changeNotes}
+                    onChange={(e) => setChangeNotes(e.target.value)}
+                    placeholder="e.g. Fare went up last week. Boarding point moved to the new terminal."
+                    className={`${inputCls} resize-none`}
+                  />
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* ── NEW ROUTE ── */}
+        {type === 'new_route' && (
+          <>
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label htmlFor="change-notes" className="mb-1 block text-sm font-medium text-owa-mist">
-                  What changed and why?{' '}
-                  <span className="font-normal text-owa-mist/50">(optional)</span>
+                <label htmlFor="origin" className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-owa-mist">
+                  Origin *
                 </label>
-                <textarea
-                  id="change-notes"
-                  rows={2}
-                  value={changeNotes}
-                  onChange={(e) => setChangeNotes(e.target.value)}
-                  placeholder="e.g. Fare went up last week. Boarding point moved to the new terminal."
-                  className={`${inputCls} resize-none`}
+                <input
+                  id="origin"
+                  type="text"
+                  list="owa-stops"
+                  required
+                  value={origin}
+                  onChange={(e) => setOrigin(e.target.value)}
+                  placeholder="e.g. Ojuelegba"
+                  className={inputCls}
+                />
+              </div>
+              <div>
+                <label htmlFor="destination" className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-owa-mist">
+                  Destination *
+                </label>
+                <input
+                  id="destination"
+                  type="text"
+                  list="owa-stops"
+                  required
+                  value={destination}
+                  onChange={(e) => setDestination(e.target.value)}
+                  placeholder="e.g. Ketu Garage"
+                  className={inputCls}
                 />
               </div>
             </div>
-          )}
-        </>
-      )}
 
-      {/* ── NEW ROUTE ── */}
-      {type === 'new_route' && (
-        <>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label htmlFor="origin" className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-owa-mist">
-                Origin *
-              </label>
-              <input
-                id="origin"
-                type="text"
-                list="owa-stops"
-                required
-                value={origin}
-                onChange={(e) => setOrigin(e.target.value)}
-                placeholder="e.g. Ojuelegba"
-                className={inputCls}
-              />
+            <div className="space-y-3">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-owa-mist">
+                Steps *
+              </p>
+              {steps.map((step, index) => (
+                <StepCard
+                  key={step.id}
+                  step={step}
+                  index={index}
+                  canRemove={steps.length > 1}
+                  error={stepErrors[step.id]}
+                  onChange={(patch) => updateStep(step.id, patch)}
+                  onRemove={() => removeStep(step.id)}
+                />
+              ))}
+              <button
+                type="button"
+                onClick={addStep}
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed
+                  border-white/[0.12] py-2.5 text-sm font-medium text-owa-mist transition-colors
+                  hover:border-owa-gold/30 hover:text-owa-gold"
+              >
+                <Plus size={14} />
+                Add step
+              </button>
             </div>
-            <div>
-              <label htmlFor="destination" className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-owa-mist">
-                Destination *
-              </label>
-              <input
-                id="destination"
-                type="text"
-                list="owa-stops"
-                required
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                placeholder="e.g. Ketu Garage"
-                className={inputCls}
-              />
-            </div>
-          </div>
+          </>
+        )}
 
-          <div className="space-y-3">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-owa-mist">
-              Route legs *
-            </p>
-            {legs.map((leg, index) => (
-              <LegCard
-                key={leg.id}
-                leg={leg}
-                index={index}
-                canRemove={legs.length > 1}
-                error={legErrors[leg.id]}
-                onChange={(patch) => updateLeg(leg.id, patch)}
-                onRemove={() => removeLeg(leg.id)}
-              />
-            ))}
-            <button
-              type="button"
-              onClick={addLeg}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed
-                border-white/[0.12] py-2.5 text-sm font-medium text-owa-mist transition-colors
-                hover:border-owa-gold/30 hover:text-owa-gold"
-            >
-              <Plus size={14} />
-              Add leg
-            </button>
-          </div>
-        </>
-      )}
+        {formError && (
+          <p role="alert" className="text-sm font-medium text-red-400">{formError}</p>
+        )}
 
-      {formError && (
-        <p role="alert" className="text-sm font-medium text-red-400">{formError}</p>
-      )}
+        <div>
+          <label htmlFor="contact" className="mb-1.5 block text-sm font-medium text-owa-mist">
+            Email{' '}
+            <span className="font-normal text-owa-mist/50">(optional)</span>
+          </label>
+          <input
+            id="contact"
+            type="email"
+            value={contact}
+            onChange={(e) => setContact(e.target.value)}
+            placeholder="e.g. you@example.com"
+            className={inputCls}
+          />
+        </div>
 
-      <div>
-        <label htmlFor="contact" className="mb-1.5 block text-sm font-medium text-owa-mist">
-          Email{' '}
-          <span className="font-normal text-owa-mist/50">(optional)</span>
-        </label>
-        <input
-          id="contact"
-          type="email"
-          value={contact}
-          onChange={(e) => setContact(e.target.value)}
-          placeholder="e.g. you@example.com"
-          className={inputCls}
-        />
+        {submitStatus === 'error' && (
+          <p className="rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2.5 text-sm text-red-400">
+            {errorMsg}
+          </p>
+        )}
+      </form>
+
+      {/* ── Sticky submit bar ── */}
+      <div className="fixed bottom-0 inset-x-0 z-50 border-t border-white/[0.06] bg-owa-night/95 backdrop-blur-sm">
+        <div className="mx-auto max-w-2xl px-4 py-3">
+          <Button
+            form="contribute-form"
+            type="submit"
+            disabled={isLoading}
+            isLoading={isLoading}
+            className="w-full"
+          >
+            Submit
+          </Button>
+        </div>
       </div>
-
-      {submitStatus === 'error' && (
-        <p className="rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2.5 text-sm text-red-400">
-          {errorMsg}
-        </p>
-      )}
-
-      <Button type="submit" disabled={isLoading} isLoading={isLoading} className="w-full">
-        Submit
-      </Button>
-    </form>
+    </>
   );
 }
 
-// ── LegCard (new_route) ────────────────────────────────────────────────────────
+// ── StepCard (new_route) ───────────────────────────────────────────────────────
 
-interface LegCardProps {
-  leg: Leg;
+interface StepCardProps {
+  step: Step;
   index: number;
   canRemove: boolean;
   error?: string;
-  onChange: (patch: Partial<Leg>) => void;
+  onChange: (patch: Partial<Step>) => void;
   onRemove: () => void;
 }
 
-function LegCard({ leg, index, canRemove, error, onChange, onRemove }: LegCardProps) {
-  const isWalk = leg.vehicle_type === 'Walk';
-  const inputCls =
+function StepCard({ step, index, canRemove, error, onChange, onRemove }: StepCardProps) {
+  const isWalk = step.vehicle_type === 'Walk';
+  const innerInputCls =
     'w-full rounded-xl border border-white/[0.08] bg-owa-night2 px-3 py-2 text-sm ' +
     'text-owa-white placeholder-owa-mist/40 ' +
     'focus:border-owa-gold/50 focus:outline-none focus:ring-1 focus:ring-owa-gold/30';
@@ -519,14 +561,14 @@ function LegCard({ leg, index, canRemove, error, onChange, onRemove }: LegCardPr
     <div className={`space-y-3 rounded-xl border bg-owa-night3 p-4 transition-colors ${error ? 'border-red-500/30' : 'border-white/[0.06]'}`}>
       <div className="flex items-center justify-between">
         <span className="text-[10px] font-bold uppercase tracking-widest text-owa-mist">
-          Leg {index + 1}
+          Step {index + 1}
         </span>
         {canRemove && (
           <button
             type="button"
             onClick={onRemove}
             className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs text-owa-mist/50 transition-colors hover:bg-red-500/10 hover:text-red-400"
-            aria-label={`Remove leg ${index + 1}`}
+            aria-label={`Remove step ${index + 1}`}
           >
             <Trash2 size={11} />
             Remove
@@ -539,50 +581,53 @@ function LegCard({ leg, index, canRemove, error, onChange, onRemove }: LegCardPr
         <input
           type="text"
           required
-          value={leg.boarding_point}
+          value={step.boarding_point}
           onChange={(e) => onChange({ boarding_point: e.target.value })}
           placeholder="e.g. Oshodi Terminal 3, BRT platform"
-          className={inputCls}
+          className={innerInputCls}
         />
       </div>
 
-      <div className="grid grid-cols-3 gap-2">
-        <div className="col-span-1">
-          <label className="mb-1.5 block text-[10px] font-medium uppercase tracking-widest text-owa-mist">Vehicle *</label>
-          <select
-            value={leg.vehicle_type}
-            onChange={(e) => onChange({ vehicle_type: e.target.value as VehicleOption })}
-            className={inputCls}
-          >
-            {VEHICLE_OPTIONS.map((v) => <option key={v} value={v}>{v}</option>)}
-          </select>
-        </div>
-        <div className="col-span-1">
+      {/* Vehicle on its own row */}
+      <div>
+        <label className="mb-1.5 block text-[10px] font-medium uppercase tracking-widest text-owa-mist">Vehicle *</label>
+        <select
+          value={step.vehicle_type}
+          onChange={(e) => onChange({ vehicle_type: e.target.value as VehicleOption })}
+          className={innerInputCls}
+        >
+          {VEHICLE_OPTIONS.map((v) => <option key={v} value={v}>{v}</option>)}
+        </select>
+      </div>
+
+      {/* Fare min + max side by side */}
+      <div className="grid grid-cols-2 gap-2">
+        <div>
           <label className="mb-1.5 block text-[10px] font-medium uppercase tracking-widest text-owa-mist">
-            Min (₦) {isWalk ? '' : '*'}
+            Fare min (₦) {isWalk ? '' : '*'}
           </label>
           <input
             type="number"
             min={0}
-            value={leg.fare_min}
+            value={step.fare_min}
             onChange={(e) => onChange({ fare_min: e.target.value })}
             placeholder="0"
             disabled={isWalk}
-            className={`${inputCls} ${isWalk ? 'cursor-not-allowed opacity-30' : ''}`}
+            className={`${innerInputCls} ${isWalk ? 'cursor-not-allowed opacity-30' : ''}`}
           />
         </div>
-        <div className="col-span-1">
+        <div>
           <label className="mb-1.5 block text-[10px] font-medium uppercase tracking-widest text-owa-mist">
-            Max (₦) {isWalk ? '' : '*'}
+            Fare max (₦) {isWalk ? '' : '*'}
           </label>
           <input
             type="number"
             min={0}
-            value={leg.fare_max}
+            value={step.fare_max}
             onChange={(e) => onChange({ fare_max: e.target.value })}
             placeholder="0"
             disabled={isWalk}
-            className={`${inputCls} ${isWalk ? 'cursor-not-allowed opacity-30' : ''}`}
+            className={`${innerInputCls} ${isWalk ? 'cursor-not-allowed opacity-30' : ''}`}
           />
         </div>
       </div>
@@ -592,10 +637,39 @@ function LegCard({ leg, index, canRemove, error, onChange, onRemove }: LegCardPr
         <input
           type="text"
           required
-          value={leg.drop_off_point}
+          value={step.drop_off_point}
           onChange={(e) => onChange({ drop_off_point: e.target.value })}
           placeholder="e.g. Ikosi Ketu overhead bridge"
-          className={inputCls}
+          className={innerInputCls}
+        />
+      </div>
+
+      <div>
+        <label className="mb-1.5 block text-[10px] font-medium uppercase tracking-widest text-owa-mist">
+          Duration{' '}
+          <span className="normal-case font-normal text-owa-mist/50">(mins, optional)</span>
+        </label>
+        <input
+          type="number"
+          min={1}
+          value={step.duration_mins}
+          onChange={(e) => onChange({ duration_mins: e.target.value })}
+          placeholder="e.g. 20"
+          className={innerInputCls}
+        />
+      </div>
+
+      <div>
+        <label className="mb-1.5 block text-[10px] font-medium uppercase tracking-widest text-owa-mist">
+          Notes or tips{' '}
+          <span className="normal-case font-normal text-owa-mist/50">(optional)</span>
+        </label>
+        <textarea
+          rows={2}
+          value={step.notes}
+          onChange={(e) => onChange({ notes: e.target.value })}
+          placeholder="e.g. Use the overhead bridge to cross. Avoid peak hours (7–9am). Tell conductor 'Ketu'."
+          className={`${innerInputCls} resize-none`}
         />
       </div>
 
@@ -618,19 +692,20 @@ interface EditLegCardProps {
 
 function EditLegCard({ leg, index, canRemove, onChange, onRemove }: EditLegCardProps) {
   const isWalk = leg.vehicle === 'Walk';
+  const [focused, setFocused] = useState<string | null>(null);
 
   return (
     <div className="space-y-3 rounded-xl border border-white/[0.06] bg-owa-night3 p-4">
       <div className="flex items-center justify-between">
         <span className="text-[10px] font-bold uppercase tracking-widest text-owa-mist">
-          Leg {index + 1}
+          Step {index + 1}
         </span>
         {canRemove && (
           <button
             type="button"
             onClick={onRemove}
             className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs text-owa-mist/50 transition-colors hover:bg-red-500/10 hover:text-red-400"
-            aria-label={`Remove leg ${index + 1}`}
+            aria-label={`Remove step ${index + 1}`}
           >
             <Trash2 size={11} />
             Remove
@@ -652,25 +727,30 @@ function EditLegCard({ leg, index, canRemove, onChange, onRemove }: EditLegCardP
       <div>
         <label className="mb-1 block text-xs font-medium text-owa-mist">Board instruction</label>
         <textarea
-          rows={2}
+          rows={focused === 'board_instruction' ? 4 : 2}
           value={leg.board_instruction}
+          onFocus={() => setFocused('board_instruction')}
+          onBlur={() => setFocused(null)}
           onChange={(e) => onChange({ board_instruction: e.target.value })}
           placeholder="e.g. Board any yellow danfo heading to CMS."
-          className={`${inputCls} resize-none`}
+          className={`${inputCls} resize-none transition-[height] duration-150`}
         />
       </div>
 
-      <div className="grid grid-cols-3 gap-2">
-        <div>
-          <label className="mb-1 block text-xs font-medium text-owa-mist">Vehicle</label>
-          <select
-            value={leg.vehicle}
-            onChange={(e) => onChange({ vehicle: e.target.value })}
-            className={inputCls}
-          >
-            {VEHICLE_OPTIONS.map((v) => <option key={v} value={v}>{v}</option>)}
-          </select>
-        </div>
+      {/* Vehicle on its own row */}
+      <div>
+        <label className="mb-1 block text-xs font-medium text-owa-mist">Vehicle</label>
+        <select
+          value={leg.vehicle}
+          onChange={(e) => onChange({ vehicle: e.target.value })}
+          className={inputCls}
+        >
+          {VEHICLE_OPTIONS.map((v) => <option key={v} value={v}>{v}</option>)}
+        </select>
+      </div>
+
+      {/* Fare min + max side by side */}
+      <div className="grid grid-cols-2 gap-2">
         <div>
           <label className="mb-1 block text-xs font-medium text-owa-mist">Fare min (₦)</label>
           <input
@@ -711,16 +791,18 @@ function EditLegCard({ leg, index, canRemove, onChange, onRemove }: EditLegCardP
       <div>
         <label className="mb-1 block text-xs font-medium text-owa-mist">Alight instruction</label>
         <textarea
-          rows={2}
+          rows={focused === 'alight_instruction' ? 4 : 2}
           value={leg.alight_instruction}
+          onFocus={() => setFocused('alight_instruction')}
+          onBlur={() => setFocused(null)}
           onChange={(e) => onChange({ alight_instruction: e.target.value })}
           placeholder="e.g. Drop when you see the overhead bridge."
-          className={`${inputCls} resize-none`}
+          className={`${inputCls} resize-none transition-[height] duration-150`}
         />
       </div>
 
       <div>
-        <label className="mb-1 block text-xs font-medium text-owa-mist">Leg notes (optional)</label>
+        <label className="mb-1 block text-xs font-medium text-owa-mist">Step notes (optional)</label>
         <input
           type="text"
           value={leg.notes}
