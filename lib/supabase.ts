@@ -50,9 +50,18 @@ export async function submitContribution(payload: {
   origin?: string;
   destination?: string;
   description: string;
+  legs?: object[];
   submitter_contact?: string;
 }): Promise<{ success: boolean; error?: string }> {
-  const { error } = await getSupabase().from('route_submissions').insert(payload);
-  if (error) return { success: false, error: error.message };
+  // Strip undefined values — PostgREST treats missing keys differently from null
+  const row = Object.fromEntries(
+    Object.entries(payload).filter(([, v]) => v !== undefined)
+  );
+  console.log('[submitContribution] inserting row:', JSON.stringify(row));
+  const { error } = await getSupabase().from('route_submissions').insert(row);
+  if (error) {
+    console.error('[submitContribution] Supabase error:', error.message, error.details, error.hint);
+    return { success: false, error: error.message };
+  }
   return { success: true };
 }

@@ -233,7 +233,22 @@ export function ContributeForm({
     try {
       const body =
         type === 'new_route'
-          ? { type, origin, destination, description, submitter_contact: contact || undefined }
+          ? {
+              type,
+              origin,
+              destination,
+              description,
+              legs: steps.map((s) => ({
+                vehicle_type: s.vehicle_type,
+                boarding_point: s.boarding_point,
+                drop_off_point: s.drop_off_point,
+                fare_min: s.fare_min !== '' ? Number(s.fare_min) : null,
+                fare_max: s.fare_max !== '' ? Number(s.fare_max) : null,
+                duration_mins: s.duration_mins !== '' ? Number(s.duration_mins) : null,
+                notes: s.notes.trim() || null,
+              })),
+              submitter_contact: contact || undefined,
+            }
           : { type: 'correction', route_id: routeId, description, submitter_contact: contact || undefined };
 
       const res = await fetch('/api/contribute', {
