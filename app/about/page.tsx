@@ -1,78 +1,129 @@
 import type { Metadata } from 'next';
-import { AlertCircle, Database, Zap, Users } from 'lucide-react';
+import { AlertCircle, Database, Zap, Users, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'About Owa',
+  title: 'How Owa works',
   description: 'What Owa is, how it works, and how to help keep it accurate.',
 };
+
+const sections = [
+  {
+    icon: Zap,
+    heading: 'What it does',
+    content: (
+      <p className="text-sm leading-relaxed text-owa-mist">
+        Owa is a public transport direction tool built for everyday Lagos commuters. Type where you
+        are and where you&apos;re going — we&apos;ll break down your journey into clear numbered
+        steps: which bus to board, what to tell the conductor, where to drop, and how much it will
+        cost.
+      </p>
+    ),
+  },
+  {
+    icon: Database,
+    heading: 'How the data works',
+    content: (
+      <p className="text-sm leading-relaxed text-owa-mist">
+        Owa does not use Google Maps, a live API, or GPS. Every route is manually researched and
+        written by someone who has taken it.
+      </p>
+    ),
+  },
+  {
+    icon: AlertCircle,
+    heading: 'A few things to keep in mind',
+    content: (
+      <div className="space-y-2.5 rounded-r-xl border-l-2 border-owa-gold/40 bg-owa-night3 px-4 py-4">
+        {[
+          'Routes are manually maintained — we are not connected to live transit data.',
+          'Danfo fares change frequently, especially when fuel prices shift.',
+          'Bus stops occasionally move or close without notice.',
+          'Always carry extra cash in case fares are higher than shown.',
+          'When in doubt, ask a conductor or fellow passenger to confirm.',
+        ].map((item) => (
+          <div key={item} className="flex items-start gap-2.5">
+            <div className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-owa-gold/50" />
+            <p className="text-sm leading-relaxed text-owa-mist">{item}</p>
+          </div>
+        ))}
+      </div>
+    ),
+  },
+  {
+    icon: Users,
+    heading: 'Help keep it accurate',
+    content: (
+      <div className="space-y-4">
+        <p className="text-sm leading-relaxed text-owa-mist">
+          Owa gets better when commuters flag wrong information. On any route result, tap{' '}
+          <span className="font-semibold text-owa-white">&ldquo;Report a problem&rdquo;</span> to
+          flag an incorrect landmark, wrong fare, or a route that no longer runs. You don&apos;t
+          need an account — every report is reviewed by the maintainer.
+        </p>
+        <a
+          href="/contribute"
+          className="inline-flex items-center gap-2 rounded-xl border border-owa-gold/30 bg-owa-gold/10 px-4 py-2.5 text-sm font-semibold text-owa-gold transition-colors hover:bg-owa-gold/20"
+        >
+          Submit a route
+          <ArrowRight size={14} />
+        </a>
+      </div>
+    ),
+  },
+];
 
 export default function AboutPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
-      <h1 className="text-3xl font-black text-gray-900 mb-2">About Owa</h1>
-      <p className="text-gray-500 mb-8">Lagos, step by step.</p>
 
-      <div className="space-y-8">
-        <section>
-          <h2 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
-            <Zap size={18} className="text-owa-green" /> What is Owa?
-          </h2>
-          <p className="text-gray-600 leading-relaxed">
-            Owa is a public transport direction tool built for everyday Lagos commuters. Type where you are
-            and where you&apos;re going — we&apos;ll break down your journey into clear numbered steps: which bus
-            to board, what to tell the conductor, where to drop, and how much it will cost.
-          </p>
-          <p className="mt-3 text-gray-600 leading-relaxed">
-            The word &ldquo;Owa&rdquo; is what conductors shout as their danfo approaches a bus stop. It means
-            arrival, movement, belonging. That&apos;s what this app does for Lagos commuters navigating an
-            unfamiliar route.
-          </p>
-        </section>
+      {/* Back nav */}
+      <a
+        href="/"
+        className="mb-8 block text-sm text-owa-mist transition-colors hover:text-owa-gold"
+      >
+        ← Back to search
+      </a>
 
-        <section>
-          <h2 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
-            <Database size={18} className="text-owa-green" /> How the data works
-          </h2>
-          <p className="text-gray-600 leading-relaxed">
-            Owa does not use Google Maps, a live API, or GPS. Every route is manually researched and
-            written by someone who has taken it. Fare estimates reflect real market rates as of June 2026
-            — they will drift over time as fuel prices change.
-          </p>
-          <p className="mt-3 text-gray-600 leading-relaxed">
-            The directions are written in plain English, then refined by an AI model (Claude) to make them
-            sound natural — the way a knowledgeable Lagosian would explain a route to someone new. The AI
-            never invents stops, landmarks, or fares. It only reformats what we already know.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
-            <AlertCircle size={18} className="text-owa-green" /> Accuracy disclaimer
-          </h2>
-          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 space-y-2">
-            <p className="font-semibold">Please read this before relying on Owa for a trip:</p>
-            <ul className="list-disc list-inside space-y-1">
-              <li>Routes are manually maintained — we are not connected to live transit data.</li>
-              <li>Danfo fares change frequently, especially when fuel prices shift.</li>
-              <li>Bus stops occasionally move or close without notice.</li>
-              <li>Always carry extra cash in case fares are higher than shown.</li>
-              <li>When in doubt, ask a conductor or fellow passenger to confirm.</li>
-            </ul>
-          </div>
-        </section>
-
-        <section>
-          <h2 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
-            <Users size={18} className="text-owa-green" /> Help keep it accurate
-          </h2>
-          <p className="text-gray-600 leading-relaxed">
-            Owa gets better when commuters flag wrong information. On any route result, tap{' '}
-            <span className="font-semibold text-gray-800">&ldquo;Flag step&rdquo;</span> to report
-            an incorrect landmark, wrong fare, or a route that no longer runs. You don&apos;t need an account.
-            Every report is reviewed by the maintainer.
-          </p>
-        </section>
+      {/* Page header */}
+      <div className="mb-10">
+        <h1 className="text-3xl font-black text-owa-white">How Owa works</h1>
+        <p className="mt-1.5 text-sm text-owa-mist">Lagos transit, step by step.</p>
       </div>
+
+      {/* Sections */}
+      <div className="rounded-2xl border border-white/[0.06] bg-owa-card shadow-xl shadow-black/25">
+        {sections.map(({ icon: Icon, heading, content }, i) => (
+          <div key={heading}>
+            {i > 0 && <div className="mx-5 border-t border-white/[0.06]" />}
+            <section className="p-6">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-owa-gold/10">
+                  <Icon size={15} className="text-owa-gold" />
+                </div>
+                <h2 className="font-bold text-owa-white">{heading}</h2>
+              </div>
+              {content}
+            </section>
+          </div>
+        ))}
+      </div>
+
+      {/* Contributor credit */}
+      <p className="mt-6 text-center text-xs text-owa-mist/40">
+        Built with local knowledge from Lagos commuters.
+      </p>
+
+      {/* Bottom CTA */}
+      <div className="mt-8 text-center">
+        <a
+          href="/"
+          className="inline-flex items-center gap-2 rounded-xl bg-owa-gold px-6 py-3 text-sm font-bold text-owa-night transition-colors hover:bg-owa-gold-bright"
+        >
+          Start searching
+          <ArrowRight size={15} />
+        </a>
+      </div>
+
     </div>
   );
 }
