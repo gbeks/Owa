@@ -51,6 +51,10 @@ export async function submitContribution(payload: {
   destination?: string;
   description: string;
   legs?: object[];
+  submission_type?: 'new_route' | 'edit_route' | 'flag_issue';
+  original_data?: object;
+  proposed_data?: object;
+  affected_leg_id?: string;
   submitter_contact?: string;
 }): Promise<{ success: boolean; error?: string }> {
   // Strip undefined values — PostgREST treats missing keys differently from null

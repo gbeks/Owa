@@ -231,25 +231,42 @@ export function ContributeForm({
 
     setSubmitStatus('loading');
     try {
-      const body =
-        type === 'new_route'
-          ? {
-              type,
-              origin,
-              destination,
-              description,
-              legs: steps.map((s) => ({
-                vehicle_type: s.vehicle_type,
-                boarding_point: s.boarding_point,
-                drop_off_point: s.drop_off_point,
-                fare_min: s.fare_min !== '' ? Number(s.fare_min) : null,
-                fare_max: s.fare_max !== '' ? Number(s.fare_max) : null,
-                duration_mins: s.duration_mins !== '' ? Number(s.duration_mins) : null,
-                notes: s.notes.trim() || null,
-              })),
-              submitter_contact: contact || undefined,
-            }
-          : { type: 'correction', route_id: routeId, description, submitter_contact: contact || undefined };
+      const inFlagMode = !route || correctionMode === 'flag';
+
+      let body: Record<string, unknown>;
+
+      if (type === 'new_route') {
+        const mappedLegs = steps.map((s) => ({
+          vehicle_type: s.vehicle_type,
+          boarding_point: s.boarding_point,
+          drop_off_point: s.drop_off_point,
+          fare_min: s.fare_min !== '' ? Number(s.fare_min) : null,
+          fare_max: s.fare_max !== '' ? Number(s.fare_max) : null,
+          duration_mins: s.duration_mins !== '' ? Number(s.duration_mins) : null,
+          notes: s.notes.trim() || null,
+        }));
+        body = {
+          type: 'new_route',
+          submission_type: 'new_route',
+          origin,
+          destination,
+          description,
+          legs: mappedLegs,
+          proposed_data: { origin, destination, legs: mappedLegs },
+          submitter_contact: contact || undefined,
+        };
+      } else {
+        body = {
+          type: 'correction',
+          submission_type: inFlagMode ? 'flag_issue' : 'edit_route',
+          route_id: routeId,
+          description,
+          proposed_data: inFlagMode
+            ? { issues: Array.from(flagged), notes: flagNotes.trim() || null }
+            : { proposed_legs: editLegs, change_notes: changeNotes.trim() || null },
+          submitter_contact: contact || undefined,
+        };
+      }
 
       const res = await fetch('/api/contribute', {
         method: 'POST',

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { submitContribution } from '@/lib/supabase';
+import { findRouteById } from '@/lib/routes';
 
 export async function POST(req: Request) {
   // Parse JSON first — isolated so a bad body returns 400, not a swallowed Supabase error
@@ -12,7 +13,10 @@ export async function POST(req: Request) {
 
   console.log('[/api/contribute] received body:', JSON.stringify(body, null, 2));
 
-  const { type, route_id, origin, destination, description, submitter_contact, legs } = body as Record<string, unknown>;
+  const {
+    type, route_id, origin, destination, description, submitter_contact,
+    legs, submission_type, proposed_data, affected_leg_id,
+  } = body as Record<string, unknown>;
 
   // Validate type
   if (!type || !['correction', 'new_route'].includes(type as string)) {
@@ -36,6 +40,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: msg }, { status: 400 });
   }
 
+  // For edit_route submissions, capture the current route state as original_data
+  let original_data: object | undefined;
+  if (submission_type === 'edit_route' && route_id) {
+    const existingRoute = findRouteById(route_id as string);
+    if (existingRoute) original_data = existingRoute;
+  }
+
   // Submit to Supabase
   let result: { success: boolean; error?: string };
   try {
@@ -46,6 +57,10 @@ export async function POST(req: Request) {
       destination: destination as string | undefined,
       description: (description as string).trim(),
       legs: legs as object[] | undefined,
+      submission_type: submission_type as 'new_route' | 'edit_route' | 'flag_issue' | undefined,
+      original_data,
+      proposed_data: proposed_data as object | undefined,
+      affected_leg_id: affected_leg_id as string | undefined,
       submitter_contact: submitter_contact as string | undefined,
     });
   } catch (err) {
